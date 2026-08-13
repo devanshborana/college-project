@@ -30,8 +30,15 @@ function StatusBadge({ status }) {
   return <span className={`status-badge ${cls}`}>{icon} {status}</span>
 }
 
+const getSkeleton = (lang) => {
+  if (lang === 'c++') return '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your C++ code here\n    \n    return 0;\n}'
+  if (lang === 'html') return '<!-- Write your HTML/CSS/JS code here -->\n\n'
+  return '#include <stdio.h>\n\nint main() {\n    // Write your C code here\n    \n    return 0;\n}'
+}
+
 export default function ProblemSetPage() {
   const [solvedIds, setSolvedIds] = useState([])
+  const [inProgressIds, setInProgressIds] = useState([])
   const [submissions, setSubmissions] = useState([]) // array of { id, probId, status, timestamp }
   const [activeProblem, setActiveProblem] = useState(null)
   const [activeTab, setActiveTab] = useState('description')
@@ -47,7 +54,7 @@ export default function ProblemSetPage() {
 
   const problems = allProblems.map(p => ({
     ...p,
-    status: solvedIds.includes(p.id) ? 'Solved' : 'Not Attempted'
+    status: solvedIds.includes(p.id) ? 'Solved' : inProgressIds.includes(p.id) ? 'In Progress' : 'Not Attempted'
   }))
 
   const toggle = (arr, val, setter) => {
@@ -65,6 +72,15 @@ export default function ProblemSetPage() {
   const solved = problems.filter(p => p.status === 'Solved').length
 
   const handleRunCode = async () => {
+    if (!code || code.trim() === '' || code.trim() === getSkeleton(activeProblem.lang).trim()) {
+      setOutput('Please write your code first before running.')
+      return
+    }
+
+    if (!solvedIds.includes(activeProblem.id) && !inProgressIds.includes(activeProblem.id)) {
+      setInProgressIds([...inProgressIds, activeProblem.id])
+    }
+
     if (activeProblem.lang === 'html') {
       setIsRunning(true)
       setTimeout(() => {
@@ -82,22 +98,26 @@ export default function ProblemSetPage() {
     setIsRunning(true)
     setOutput('Running...')
     try {
-      const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+      const compilerMap = {
+        'c++': 'gcc-13.2.0',
+        'c': 'gcc-13.2.0-c',
+      }
+      const res = await fetch('https://wandbox.org/api/compile.json', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          language: activeProblem.lang,
-          version: '10.2.0',
-          files: [{ content: code }]
+          compiler: compilerMap[activeProblem.lang] || 'gcc-13.2.0',
+          code: code,
+          save: false
         })
       })
       const data = await res.json()
-      const result = data.run.stdout || data.run.stderr || ''
+      const result = data.program_output || data.compiler_error || data.program_error || ''
       
       let outText = result
       let isSuccess = false
       
-      if (data.run.code !== 0 || data.run.stderr) {
+      if (data.status !== '0' || data.compiler_error || data.program_error) {
         outText = `[Compilation/Runtime Error]\n${result}`
       } else {
         // Validation: check if output matches expected
@@ -361,15 +381,7 @@ export default function ProblemSetPage() {
                 <div key={p.id} onClick={() => { 
                   setActiveProblem(p); 
                   setActiveTab('description'); 
-                  
-                  // Provide only a barebones skeleton, not the full test cases
-                  const skeleton = p.lang === 'c++' 
-                    ? '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Write your C++ code here\n    \n    return 0;\n}'
-                    : p.lang === 'html'
-                    ? '<!-- Write your HTML/CSS/JS code here -->\n\n'
-                    : '#include <stdio.h>\n\nint main() {\n    // Write your C code here\n    \n    return 0;\n}';
-                  
-                  setCode(skeleton); 
+                  setCode(getSkeleton(p.lang)); 
                   setOutput('');
                 }} className="problem-row fade-in-up" style={{ cursor: 'pointer' }}>
                   <div>

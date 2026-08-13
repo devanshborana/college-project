@@ -211,21 +211,34 @@ Object.entries(student).forEach(([k, v]) => {
   },
 ]
 
-// ── Piston API call ──────────────────────────────────────────────────────────
+// ── Wandbox API call (Replacing Piston) ──────────────────────────────────────
 async function runOnPiston(lang, code) {
-  const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+  const compilerMap = {
+    'python': 'cpython-3.14.0',
+    'c++': 'gcc-13.2.0',
+    'c': 'gcc-13.2.0-c',
+    'java': 'openjdk-jdk-22+36',
+    'javascript': 'nodejs-20.17.0'
+  }
+  
+  const res = await fetch('https://wandbox.org/api/compile.json', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      language: lang.pistonLang,
-      version: lang.pistonVersion,
-      files: [{ content: code }],
-      stdin: '',
-      args: [],
+      compiler: compilerMap[lang.pistonLang] || 'gcc-13.2.0',
+      code: code,
+      save: false
     }),
   })
   if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json()
+  const data = await res.json()
+  
+  return {
+    run: {
+      stdout: data.program_output || '',
+      stderr: data.compiler_error || data.program_error || ''
+    }
+  }
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -235,7 +248,12 @@ export default function PlaygroundPage() {
   const initLang = LANGUAGES.find(l => l.id === searchParams.get('lang')) || LANGUAGES[0]
   const visibleLanguages = isLocked ? [initLang] : LANGUAGES
   const [activeLang, setActiveLang] = useState(initLang)
-  const [code, setCode] = useState(initLang.defaultCode)
+  const [code, setCode] = useState(initLang.id === 'html' ? '' : initLang.defaultCode)
+  const [htmlCode, setHtmlCode] = useState('<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <title>LMCST Playground</title>\n</head>\n<body>\n  <h1>Hello, LMCST! 👋</h1>\n  <p>Edit this code and click <b>Run</b>.</p>\n</body>\n</html>')
+  const [cssCode, setCssCode] = useState('')
+  const [jsCode, setJsCode] = useState('')
+  const [webTab, setWebTab] = useState('html')
+  
   const [htmlOutput, setHtmlOutput] = useState('')
   const [consoleOutput, setConsoleOutput] = useState(null) // { stdout, stderr, time }
   const [running, setRunning] = useState(false)
@@ -247,7 +265,9 @@ export default function PlaygroundPage() {
   // Switch language
   const switchLang = (lang) => {
     setActiveLang(lang)
-    setCode(lang.defaultCode)
+    if (lang.id !== 'html') {
+      setCode(lang.defaultCode)
+    }
     setConsoleOutput(null)
     setHtmlOutput('')
     setRunStatus(null)
@@ -271,7 +291,25 @@ export default function PlaygroundPage() {
 
     // HTML/CSS/JS — browser iframe
     if (activeLang.id === 'html') {
-      setHtmlOutput(code)
+      let combinedHTML = htmlCode || '';
+      
+      if (cssCode) {
+        if (combinedHTML.includes('</head>')) {
+          combinedHTML = combinedHTML.replace('</head>', `<style>\n${cssCode}\n</style>\n</head>`);
+        } else {
+          combinedHTML = `<style>\n${cssCode}\n</style>\n` + combinedHTML;
+        }
+      }
+      
+      if (jsCode) {
+        if (combinedHTML.includes('</body>')) {
+          combinedHTML = combinedHTML.replace('</body>', `<script>\n${jsCode}\n</script>\n</body>`);
+        } else {
+          combinedHTML = combinedHTML + `\n<script>\n${jsCode}\n</script>`;
+        }
+      }
+
+      setHtmlOutput(combinedHTML)
       setConsoleOutput(null)
       setRunning(false)
       setRunStatus('ok')
@@ -296,7 +334,13 @@ export default function PlaygroundPage() {
 
   const handleReset = () => {
     if (window.confirm("Are you sure? All your code will be permanently removed.")) {
-      setCode('')
+      if (activeLang.id === 'html') {
+        if (webTab === 'html') setHtmlCode('')
+        else if (webTab === 'css') setCssCode('')
+        else setJsCode('')
+      } else {
+        setCode('')
+      }
       setConsoleOutput(null)
       setHtmlOutput('')
       setRunStatus(null)
@@ -304,7 +348,10 @@ export default function PlaygroundPage() {
   }
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code)
+    const textToCopy = activeLang.id === 'html' 
+      ? (webTab === 'html' ? htmlCode : webTab === 'css' ? cssCode : jsCode)
+      : code
+    navigator.clipboard.writeText(textToCopy)
     setIsCopied(true)
     setTimeout(() => setIsCopied(false), 2000)
   }
@@ -382,9 +429,27 @@ export default function PlaygroundPage() {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 16 }}>{activeLang.icon}</span>
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#cdd6f4' }}>{activeLang.label}</span>
+              
+              {activeLang.id === 'html' ? (
+                <div style={{ display: 'flex', gap: 4 }}>
+                  {['html', 'css', 'js'].map(t => (
+                    <button key={t} onClick={() => setWebTab(t)} style={{
+                      background: webTab === t ? '#313244' : 'transparent',
+                      color: webTab === t ? '#89b4fa' : '#6c7086',
+                      border: 'none', padding: '4px 10px', borderRadius: 6,
+                      fontSize: 12, fontWeight: 700, cursor: 'pointer', textTransform: 'uppercase',
+                      transition: 'all 0.15s'
+                    }}>
+                      {t}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span style={{ fontSize: 13, fontWeight: 600, color: '#cdd6f4' }}>{activeLang.label}</span>
+              )}
+
               <span style={{ fontSize: 11, color: '#4a4a6a', background: '#252338', padding: '2px 8px', borderRadius: 20 }}>
-                {lineCount} lines
+                {activeLang.id === 'html' ? (webTab === 'html' ? htmlCode : webTab === 'css' ? cssCode : jsCode).split('\n').length : lineCount} lines
               </span>
             </div>
             {/* Coloured dots */}
@@ -411,8 +476,16 @@ export default function PlaygroundPage() {
             {/* Textarea */}
             <textarea
               ref={textareaRef}
-              value={code}
-              onChange={e => setCode(e.target.value)}
+              value={activeLang.id === 'html' ? (webTab === 'html' ? htmlCode : webTab === 'css' ? cssCode : jsCode) : code}
+              onChange={e => {
+                if (activeLang.id === 'html') {
+                  if (webTab === 'html') setHtmlCode(e.target.value)
+                  else if (webTab === 'css') setCssCode(e.target.value)
+                  else setJsCode(e.target.value)
+                } else {
+                  setCode(e.target.value)
+                }
+              }}
               onKeyDown={handleKeyDown}
               spellCheck={false}
               autoComplete="off"
