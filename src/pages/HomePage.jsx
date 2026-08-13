@@ -6,47 +6,40 @@ import { quizData } from '../data/quizData'
 
 const weekSchedule = {
   1: [ // Monday
-    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:50 AM - 9:40 AM', faculty: 'GSS', room: 'GF-2', resources: [{ label: 'View Syllabus', link: '/curriculum' }], expanded: true, dotColor: '#3b82f6' },
-    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:40 AM - 10:30 AM', faculty: 'RM', room: 'GF-2', resources: [{ label: 'Module Quiz', link: '/quiz/web-tech' }], expanded: false, dotColor: '#94a3b8' },
-    { id: 3, type: 'Assessment', title: 'DSA Lab / OOP Lab', time: '10:30 AM - 12:20 PM', faculty: 'AB / SM', room: 'EL-4 / CC-2', resources: [{ label: 'Open Compiler (C)', link: '/playground?lang=c&locked=true' }, { label: 'Coding Questions', link: '/curriculum' }], expanded: false, dotColor: '#f59e0b' },
-    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '1:10 PM - 2:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' },
-    { id: 5, type: 'Lecture', title: 'Foundations of Data Science (FDS)', time: '2:00 PM - 2:50 PM', faculty: 'AB', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
+    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:00 AM - 9:00 AM', faculty: 'GSS', room: 'GF-2', resources: [{ label: 'View Syllabus', link: '/curriculum' }], expanded: true, dotColor: '#3b82f6' },
+    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:00 AM - 10:00 AM', faculty: 'RM', room: 'GF-2', resources: [{ label: 'Module Quiz', link: '/quiz/web-tech' }], expanded: false, dotColor: '#94a3b8' },
+    { id: 3, type: 'Assessment', title: 'DSA Lab / OOP Lab', time: '10:00 AM - 12:00 PM', faculty: 'AB / SM', room: 'EL-4 / CC-2', resources: [{ label: 'Open Compiler (C)', link: '/playground?lang=c&locked=true' }, { label: 'Coding Questions', link: '/curriculum' }], expanded: false, dotColor: '#f59e0b' },
+    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '12:00 PM - 1:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
   ],
   2: [ // Tuesday
-    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:50 AM - 9:40 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
-    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:40 AM - 10:30 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
-    { id: 3, type: 'Assessment', title: 'WT Lab / DSA Lab', time: '10:30 AM - 12:20 PM', faculty: 'RM / SM', room: 'CC-2 / EL-4', expanded: false, dotColor: '#f59e0b' },
-    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '1:10 PM - 2:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' },
-    { id: 5, type: 'Lecture', title: 'SPORTS', time: '2:00 PM - 2:50 PM', faculty: '-', room: 'Ground', expanded: false, dotColor: '#22c55e' }
+    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:00 AM - 9:00 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
+    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:00 AM - 10:00 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
+    { id: 3, type: 'Assessment', title: 'WT Lab / DSA Lab', time: '10:00 AM - 12:00 PM', faculty: 'RM / SM', room: 'CC-2 / EL-4', expanded: false, dotColor: '#f59e0b' },
+    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '12:00 PM - 1:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
   ],
   3: [ // Wednesday
-    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:50 AM - 9:40 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
-    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:40 AM - 10:30 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
-    { id: 3, type: 'Assessment', title: 'DSA Lab / WT Lab', time: '10:30 AM - 12:20 PM', faculty: 'AB / RM', room: 'EL-4 / CC-2', expanded: false, dotColor: '#f59e0b' },
-    { id: 4, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '1:10 PM - 2:00 PM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' },
-    { id: 5, type: 'Lecture', title: 'Data Structures & Algorithms (DSA)', time: '2:00 PM - 2:50 PM', faculty: 'AB', room: 'GF-2', expanded: false, dotColor: '#6c47ff' }
+    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:00 AM - 9:00 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
+    { id: 2, type: 'Lecture', title: 'Web Technology (WT)', time: '9:00 AM - 10:00 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
+    { id: 3, type: 'Assessment', title: 'DSA Lab / WT Lab', time: '10:00 AM - 12:00 PM', faculty: 'AB / RM', room: 'EL-4 / CC-2', expanded: false, dotColor: '#f59e0b' },
+    { id: 4, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '12:00 PM - 1:00 PM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' }
   ],
   4: [ // Thursday
-    { id: 1, type: 'Lecture', title: 'Data Structures & Algorithms (DSA)', time: '8:50 AM - 9:40 AM', faculty: 'AB', room: 'GF-2', expanded: true, dotColor: '#6c47ff' },
-    { id: 2, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '9:40 AM - 10:30 AM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' },
-    { id: 3, type: 'Assessment', title: 'FDS Lab / DSA Lab', time: '10:30 AM - 12:20 PM', faculty: 'AB / SM', room: 'CC-2 / EL-4', expanded: false, dotColor: '#f59e0b' },
-    { id: 4, type: 'Lecture', title: 'PPCE', time: '1:10 PM - 2:00 PM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
-    { id: 5, type: 'Lecture', title: 'Foundations of Data Science (FDS)', time: '2:00 PM - 2:50 PM', faculty: 'AB', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
+    { id: 1, type: 'Lecture', title: 'Data Structures & Algorithms (DSA)', time: '8:00 AM - 9:00 AM', faculty: 'AB', room: 'GF-2', expanded: true, dotColor: '#6c47ff' },
+    { id: 2, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '9:00 AM - 10:00 AM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' },
+    { id: 3, type: 'Assessment', title: 'FDS Lab / DSA Lab', time: '10:00 AM - 12:00 PM', faculty: 'AB / SM', room: 'CC-2 / EL-4', expanded: false, dotColor: '#f59e0b' },
+    { id: 4, type: 'Lecture', title: 'PPCE', time: '12:00 PM - 1:00 PM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' }
   ],
   5: [ // Friday
-    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:50 AM - 9:40 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
-    { id: 2, type: 'Lecture', title: 'PPCE', time: '9:40 AM - 10:30 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
-    { id: 3, type: 'Assessment', title: 'DE Lab / OOP Lab', time: '10:30 AM - 12:20 PM', faculty: 'RM / SM', room: 'EL-4 / CC-2', expanded: false, dotColor: '#f59e0b' },
-    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '1:10 PM - 2:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' },
-    { id: 5, type: 'Lecture', title: 'LIBRARY', time: '2:00 PM - 2:50 PM', faculty: '-', room: 'Library', expanded: false, dotColor: '#22c55e' }
+    { id: 1, type: 'Lecture', title: 'Database Management Systems (DMS)', time: '8:00 AM - 9:00 AM', faculty: 'GSS', room: 'GF-2', expanded: true, dotColor: '#3b82f6' },
+    { id: 2, type: 'Lecture', title: 'PPCE', time: '9:00 AM - 10:00 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
+    { id: 3, type: 'Assessment', title: 'DE Lab / OOP Lab', time: '10:00 AM - 12:00 PM', faculty: 'RM / SM', room: 'EL-4 / CC-2', expanded: false, dotColor: '#f59e0b' },
+    { id: 4, type: 'Lecture', title: 'Digital Electronics (DE)', time: '12:00 PM - 1:00 PM', faculty: 'SM', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
   ],
   6: [ // Saturday
-    { id: 1, type: 'Lecture', title: 'Data Structures & Algorithms (DSA)', time: '8:50 AM - 9:40 AM', faculty: 'AB', room: 'GF-2', expanded: true, dotColor: '#6c47ff' },
-    { id: 2, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '9:40 AM - 10:30 AM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' },
-    { id: 3, type: 'Lecture', title: 'PPCE', time: '10:30 AM - 11:20 AM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
-    { id: 4, type: 'Lecture', title: 'Foundations of Data Science (FDS)', time: '11:30 AM - 12:20 PM', faculty: 'AB', room: 'GF-1', expanded: false, dotColor: '#94a3b8' },
-    { id: 5, type: 'Lecture', title: 'LIBRARY', time: '1:10 PM - 2:00 PM', faculty: '-', room: 'Library', expanded: false, dotColor: '#22c55e' },
-    { id: 6, type: 'Lecture', title: 'SPORTS', time: '2:00 PM - 2:50 PM', faculty: '-', room: 'Ground', expanded: false, dotColor: '#22c55e' }
+    { id: 1, type: 'Lecture', title: 'Data Structures & Algorithms (DSA)', time: '8:00 AM - 9:00 AM', faculty: 'AB', room: 'GF-2', expanded: true, dotColor: '#6c47ff' },
+    { id: 2, type: 'Lecture', title: 'Object Oriented Programming (OOP)', time: '9:00 AM - 10:00 AM', faculty: 'SM', room: 'GF-2', expanded: false, dotColor: '#6c47ff' },
+    { id: 3, type: 'Lecture', title: 'PPCE', time: '10:00 AM - 12:00 PM', faculty: 'RM', room: 'GF-2', expanded: false, dotColor: '#94a3b8' },
+    { id: 4, type: 'Lecture', title: 'Foundations of Data Science (FDS)', time: '12:00 PM - 1:00 PM', faculty: 'AB', room: 'GF-1', expanded: false, dotColor: '#94a3b8' }
   ],
   0: [] // Sunday
 }
