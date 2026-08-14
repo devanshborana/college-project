@@ -74,7 +74,58 @@ export function AppProvider({ children }) {
     loadQuizHistory()
   }, [user?.dbId])
 
-  // ── Login: look up or create a profile in Supabase ──────────────────────
+  // ── Google OAuth: listen for auth state changes ─────────────────────────
+  useEffect(() => {
+    if (!supabase) return
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const authUser = session.user
+        const googleName = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Student'
+        const googleEmail = authUser.email
+
+        // Look up existing profile by email as student_id
+        let { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name, student_id, base_points')
+          .eq('student_id', googleEmail)
+          .single()
+
+        // If no profile exists, create one
+        if (!profile) {
+          const { data: created } = await supabase
+            .from('profiles')
+            .insert({ student_id: googleEmail, full_name: googleName })
+            .select()
+            .single()
+          profile = created
+        }
+
+        if (profile) {
+          setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id })
+        }
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // ── Login with Google OAuth ─────────────────────────────────────────────
+  const loginWithGoogle = async () => {
+    if (!supabase) return { error: 'Supabase is not configured.' }
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      }
+    })
+
+    if (error) return { error: error.message }
+    return { error: null }
+  }
+
+  // ── Manual Login: look up or create a profile in Supabase ───────────────
   const login = async (name, studentId) => {
     // If Supabase is not available, fall back to local-only mode
     if (!supabase) {
@@ -90,7 +141,6 @@ export function AppProvider({ children }) {
       .single()
 
     if (fetchError && fetchError.code !== 'PGRST116') {
-      // PGRST116 = "no rows found" — that's fine, we'll create one
       console.error('Login fetch error:', fetchError.message)
       return { error: 'Could not connect to the database. Please try again.' }
     }
@@ -117,7 +167,11 @@ export function AppProvider({ children }) {
     return { error: null }
   }
 
-  const logout = () => {
+  // ── Logout ──────────────────────────────────────────────────────────────
+  const logout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut()
+    }
     setUser(null)
     setQuizHistory({})
   }
@@ -184,6 +238,7 @@ export function AppProvider({ children }) {
     <AppContext.Provider value={{
       user,
       login,
+      loginWithGoogle,
       logout,
       quizHistory,
       quizPoints,
