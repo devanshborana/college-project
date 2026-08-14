@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Calendar, ChevronLeft, ChevronRight, AlertCircle, CheckCircle, MapPin, User, ExternalLink, ArrowRight, BookOpen } from 'lucide-react'
 import { programs } from '../data/syllabus'
 import { quizData } from '../data/quizData'
+import { useApp } from '../context/AppContext'
 
 const weekSchedule = {
   1: [ // Monday
@@ -65,6 +66,7 @@ function TypeLabel({ type }) {
 }
 
 export default function HomePage() {
+  const { user } = useApp()
   const [expandedItem, setExpandedItem] = useState(1)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const navigate = useNavigate()
@@ -94,7 +96,7 @@ export default function HomePage() {
 
   return (
     <div className="page-content">
-      <h1 className="welcome-heading">Good Morning, Devansh 👋</h1>
+      <h1 className="welcome-heading">Good Morning, {user?.name.split(' ')[0]} 👋</h1>
 
       <div className="home-grid">
         {/* LEFT COLUMN */}

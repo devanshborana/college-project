@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import {
   Home, BookOpen, FileText, Code2, Trophy,
@@ -6,11 +7,13 @@ import {
 import { AppProvider } from './context/AppContext'
 import HomePage from './pages/HomePage'
 import CurriculumPage from './pages/CurriculumPage'
-import ExamsPage from './pages/ExamsPage'
+import CoursesPage from './pages/CoursesPage'
 import PlaygroundPage from './pages/PlaygroundPage'
 import ProblemSetPage from './pages/ProblemSetPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import QuizPage from './pages/QuizPage'
+import LoginPage from './pages/LoginPage'
+import { useApp } from './context/AppContext'
 
 function Sidebar() {
   return (
@@ -35,9 +38,6 @@ function Sidebar() {
         <NavLink to="/other-courses" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <MonitorPlay size={20} /><span className="nav-item-label">Courses</span>
         </NavLink>
-        <NavLink to="/exams" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-          <FileText size={20} /><span className="nav-item-label">Exams</span>
-        </NavLink>
         <NavLink to="/problems" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <HelpCircle size={20} /><span className="nav-item-label">Question Bank</span>
         </NavLink>
@@ -53,6 +53,13 @@ function Sidebar() {
 }
 
 function Header() {
+  const { user, logout } = useApp()
+  const [showDropdown, setShowDropdown] = useState(false)
+  
+  if (!user) return null
+  
+  const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+
   return (
     <header className="header">
       <div className="header-left">
@@ -76,16 +83,64 @@ function Header() {
       <div className="header-right">
         <button className="icon-btn"><Bell size={17} /></button>
         <button className="icon-btn"><GraduationCap size={17} /></button>
-        <div className="avatar">DB</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b' }}>Devansh B.</div>
-            <div style={{ fontSize: 10, color: '#6b7280' }}>ID: LMCST-2024-001</div>
+        <div className="avatar">{initials}</div>
+        <div style={{ position: 'relative' }}>
+          <div onClick={() => setShowDropdown(!showDropdown)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b' }}>{user.name}</div>
+              <div style={{ fontSize: 10, color: '#6b7280' }}>ID: {user.id}</div>
+            </div>
+            <ChevronDown size={14} color="#6b7280" />
           </div>
-          <ChevronDown size={14} color="#6b7280" />
+          {showDropdown && (
+            <div style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: 8,
+              background: 'white', border: '1px solid #e5e7eb', borderRadius: 8,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 150, zIndex: 50
+            }}>
+              <button onClick={logout} style={{
+                width: '100%', padding: '10px 16px', background: 'transparent',
+                border: 'none', textAlign: 'left', color: '#ef4444', fontSize: 13,
+                fontWeight: 600, cursor: 'pointer'
+              }}>
+                Log out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
+  )
+}
+
+function MainApp() {
+  const { user } = useApp()
+  
+  if (!user) {
+    return (
+      <Routes>
+        <Route path="*" element={<LoginPage />} />
+      </Routes>
+    )
+  }
+
+  return (
+    <>
+      <Sidebar />
+      <div className="main-layout">
+        <Header />
+        <Routes>
+          <Route path="/"            element={<HomePage />} />
+          <Route path="/curriculum"  element={<CurriculumPage />} />
+          <Route path="/other-courses" element={<CoursesPage />} />
+          <Route path="/problems"    element={<ProblemSetPage />} />
+          <Route path="/playground"  element={<PlaygroundPage />} />
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/quiz/:subjectId" element={<QuizPage />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+      </div>
+    </>
   )
 }
 
@@ -93,20 +148,7 @@ export default function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <Sidebar />
-        <div className="main-layout">
-          <Header />
-          <Routes>
-            <Route path="/"            element={<HomePage />} />
-            <Route path="/curriculum"  element={<CurriculumPage />} />
-            <Route path="/other-courses" element={<ExamsPage />} />
-            <Route path="/exams"       element={<ExamsPage />} />
-            <Route path="/problems"    element={<ProblemSetPage />} />
-            <Route path="/playground"  element={<PlaygroundPage />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route path="/quiz/:subjectId" element={<QuizPage />} />
-          </Routes>
-        </div>
+        <MainApp />
       </BrowserRouter>
     </AppProvider>
   )
