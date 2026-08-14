@@ -27,6 +27,13 @@ export default function QuizPage() {
     const fetchQuiz = async () => {
       setLoadingQuiz(true)
 
+      // If supabase is not configured, use static data immediately
+      if (!supabase) {
+        setQuiz(staticQuizData[subjectId] || null)
+        setLoadingQuiz(false)
+        return
+      }
+
       const { data: subjectData } = await supabase
         .from('subjects')
         .select('id, title, icon')

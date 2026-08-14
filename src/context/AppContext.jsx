@@ -24,7 +24,15 @@ export function AppProvider({ children }) {
   })
 
   // quizHistory: { [subjectId]: { score, total, completedAt, subjectName } }
-  const [quizHistory, setQuizHistory] = useState({})
+  const [quizHistory, setQuizHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lmcst-quiz-history') || '{}') }
+    catch { return {} }
+  })
+
+  // Persist quiz history to localStorage as fallback
+  useEffect(() => {
+    localStorage.setItem('lmcst-quiz-history', JSON.stringify(quizHistory))
+  }, [quizHistory])
 
   // Persist user to localStorage (lightweight session)
   useEffect(() => {
@@ -34,7 +42,7 @@ export function AppProvider({ children }) {
 
   // ── Load quiz history from Supabase on login ─────────────────────────────
   useEffect(() => {
-    if (!user?.dbId) return
+    if (!user?.dbId || !supabase) return
 
     const loadQuizHistory = async () => {
       const { data, error } = await supabase
@@ -68,6 +76,12 @@ export function AppProvider({ children }) {
 
   // ── Login: look up or create a profile in Supabase ──────────────────────
   const login = async (name, studentId) => {
+    // If Supabase is not available, fall back to local-only mode
+    if (!supabase) {
+      setUser({ name, id: studentId })
+      return { error: null }
+    }
+
     // 1. Check if this student_id already exists
     let { data: existing, error: fetchError } = await supabase
       .from('profiles')
@@ -126,8 +140,8 @@ export function AppProvider({ children }) {
       }
     })
 
-    // Persist to Supabase if user has a dbId
-    if (user?.dbId) {
+    // Persist to Supabase if user has a dbId and supabase is available
+    if (user?.dbId && supabase) {
       const { error } = await supabase
         .from('quiz_results')
         .insert({
