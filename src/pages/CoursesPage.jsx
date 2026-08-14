@@ -1,99 +1,136 @@
-import { MonitorPlay, ExternalLink, PlayCircle } from 'lucide-react'
+import { useState } from 'react'
+import { MonitorPlay, ExternalLink, PlayCircle, Filter } from 'lucide-react'
+import { youtubeData } from '../data/youtubeData'
 
 export default function CoursesPage() {
-  const courses = [
-    {
-      title: 'Database Management Systems (DBMS)',
-      channel: 'Gate Smashers',
-      link: 'https://www.youtube.com/playlist?list=PLxCzCOWd7aiFAN6I8CuViBuCdJgiOkT2Y',
-      color: '#ef4444', // YouTube red
-      desc: 'Complete DBMS playlist covering SQL, Normalization, ER Diagrams and concurrency control.'
-    },
-    {
-      title: 'Data Structures & Algorithms',
-      channel: 'freeCodeCamp.org',
-      link: 'https://www.youtube.com/watch?v=8hly31xKli0',
-      color: '#ef4444',
-      desc: 'Learn Data Structures and Algorithms from scratch in this comprehensive video course.'
-    },
-    {
-      title: 'Web Technology (HTML, CSS, JS)',
-      channel: 'SuperSimpleDev',
-      link: 'https://www.youtube.com/watch?v=G3e-cpL7ofc',
-      color: '#ef4444',
-      desc: 'HTML & CSS Full Course - Beginner to Pro. Excellent for building beautiful responsive websites.'
-    },
-    {
-      title: 'Object Oriented Programming (C++)',
-      channel: 'CodeBeauty',
-      link: 'https://www.youtube.com/watch?v=wN0x9eZLix4',
-      color: '#ef4444',
-      desc: 'C++ OOP Tutorial for Beginners. Understand classes, objects, inheritance, and polymorphism.'
-    },
-    {
-      title: 'Digital Electronics',
-      channel: 'Neso Academy',
-      link: 'https://www.youtube.com/playlist?list=PLBlnK6fEyqRjMH3mWf6kwqiTbT798eAOm',
-      color: '#ef4444',
-      desc: 'Master Logic Gates, Boolean Algebra, and Combinational/Sequential Circuits.'
-    },
-    {
-      title: 'Foundations of Data Science',
-      channel: 'Krish Naik',
-      link: 'https://www.youtube.com/playlist?list=PLZoTAELRMXVNUL99R4bDlVYsncUNvwUBB',
-      color: '#ef4444',
-      desc: 'Complete Machine Learning and Data Science playlist with Python.'
-    }
-  ]
+  const [selectedSubject, setSelectedSubject] = useState('All')
+  const [selectedType, setSelectedType] = useState('All')
+
+  // Extract unique subjects and types for the dropdown options
+  const subjects = ['All', ...new Set(youtubeData.map(v => v.subject))]
+  const types = ['All', ...new Set(youtubeData.map(v => v.type))]
+
+  // Filter the videos based on dropdown selections
+  const filteredVideos = youtubeData.filter(v => {
+    const matchSubject = selectedSubject === 'All' || v.subject === selectedSubject
+    const matchType = selectedType === 'All' || v.type === selectedType
+    return matchSubject && matchType
+  })
 
   return (
-    <div className="page-content" style={{ maxWidth: 960 }}>
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1e1b4b' }}>Curated YouTube Courses</h1>
-        <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>High-quality video playlists perfectly mapped to your college curriculum.</p>
+    <div className="page-content" style={{ maxWidth: 1000 }}>
+      <div style={{ marginBottom: 32, display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1e1b4b' }}>Video Library</h1>
+          <p style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>Filter by subject and video type to find exactly what you need.</p>
+        </div>
+
+        <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#4b5563', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Filter size={12} /> Subject
+            </label>
+            <select 
+              value={selectedSubject} 
+              onChange={e => setSelectedSubject(e.target.value)}
+              style={{
+                padding: '10px 16px', borderRadius: 10, border: '1px solid #e5e7eb',
+                outline: 'none', background: 'white', color: '#1e1b4b',
+                fontSize: 14, fontWeight: 600, minWidth: 160, cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+              }}
+            >
+              {subjects.map(sub => (
+                <option key={sub} value={sub}>{sub === 'All' ? 'All Subjects' : sub}</option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#4b5563', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Filter size={12} /> Video Type
+            </label>
+            <select 
+              value={selectedType} 
+              onChange={e => setSelectedType(e.target.value)}
+              style={{
+                padding: '10px 16px', borderRadius: 10, border: '1px solid #e5e7eb',
+                outline: 'none', background: 'white', color: '#1e1b4b',
+                fontSize: 14, fontWeight: 600, minWidth: 160, cursor: 'pointer',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+              }}
+            >
+              {types.map(type => (
+                <option key={type} value={type}>{type === 'All' ? 'All Types' : type}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-        {courses.map((course, i) => (
-          <a key={i} href={course.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-            <div className="card fade-in-up" style={{ 
-              padding: 24, display: 'flex', flexDirection: 'column', height: '100%',
-              transition: 'all 0.25s', borderTop: `4px solid ${course.color}`
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-4px)'
-              e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)'
-            }}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
-                <div style={{ 
-                  width: 48, height: 48, borderRadius: 12, background: `${course.color}15`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <MonitorPlay size={26} color={course.color} />
+      {filteredVideos.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: 16, border: '1px solid #e5e7eb' }}>
+          <MonitorPlay size={48} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
+          <h3 style={{ fontSize: 18, fontWeight: 700, color: '#374151', marginBottom: 8 }}>No videos found</h3>
+          <p style={{ color: '#6b7280', fontSize: 14 }}>Try adjusting your filters to see more results.</p>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 24 }}>
+          {filteredVideos.map((video) => (
+            <a key={video.id} href={video.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+              <div className="card fade-in-up" style={{ 
+                padding: 20, display: 'flex', flexDirection: 'column', height: '100%',
+                transition: 'all 0.25s', borderTop: `4px solid ${video.color}`
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-4px)'
+                e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)'
+              }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <div style={{ 
+                      width: 42, height: 42, borderRadius: 10, background: `${video.color}15`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}>
+                      <MonitorPlay size={20} color={video.color} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5, color: video.color }}>
+                        {video.type}
+                      </div>
+                      <div style={{ fontSize: 12, color: '#6b7280', fontWeight: 600 }}>{video.duration}</div>
+                    </div>
+                  </div>
+                  <ExternalLink size={16} color="#9ca3af" />
                 </div>
-                <ExternalLink size={18} color="#9ca3af" />
+
+                <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 8, lineHeight: 1.4 }}>
+                  {video.title}
+                </h3>
+                
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#d1d5db' }} />
+                  {video.channel}
+                </div>
+                
+                <div style={{ 
+                  marginTop: 'auto', display: 'inline-block',
+                  fontSize: 12, fontWeight: 700, color: '#4b5563',
+                  padding: '6px 12px', background: '#f3f4f6', borderRadius: 6,
+                  alignSelf: 'flex-start'
+                }}>
+                  {video.subject}
+                </div>
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: '#1e1b4b', marginBottom: 6 }}>{course.title}</h3>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 12 }}>by {course.channel}</div>
-              <p style={{ fontSize: 14, color: '#6b7280', lineHeight: 1.5, flex: 1 }}>{course.desc}</p>
-              
-              <div style={{ 
-                marginTop: 20, display: 'flex', alignItems: 'center', gap: 8,
-                fontSize: 14, fontWeight: 600, color: course.color,
-                padding: '10px 16px', background: `${course.color}10`, borderRadius: 8,
-                justifyContent: 'center'
-              }}>
-                <PlayCircle size={18} /> Watch on YouTube
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

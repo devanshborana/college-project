@@ -19,13 +19,10 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="flex flex-col items-center mb-6">
-        <div style={{
-          width: 46, height: 46, borderRadius: 12,
-          background: 'linear-gradient(135deg, #6c47ff, #a855f7)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'white', fontWeight: 900, fontSize: 14, letterSpacing: -0.5,
-          boxShadow: '0 4px 12px rgba(108,71,255,0.35)',
-        }}>LM</div>
+        <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
+          width: 46, height: 46, borderRadius: 12, objectFit: 'cover',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        }} />
       </div>
 
       <nav className="sidebar-nav">
@@ -63,12 +60,9 @@ function Header() {
   return (
     <header className="header">
       <div className="header-left">
-        <div style={{
-          width: 40, height: 40, borderRadius: 10,
-          background: 'linear-gradient(135deg, #6c47ff, #a855f7)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'white', fontWeight: 900, fontSize: 12,
-        }}>LMCST</div>
+        <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
+          width: 40, height: 40, borderRadius: 10, objectFit: 'cover'
+        }} />
         <div>
           <div className="college-name">Lachoo Memorial College</div>
           <div className="college-tagline">of Science & Technology, Jodhpur</div>

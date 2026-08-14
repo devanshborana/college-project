@@ -1,0 +1,81 @@
+export const youtubeData = [
+  // DBMS
+  { id: 1, subject: 'DBMS', type: 'One Shot', title: 'DBMS Complete Course in 1 Video', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=kBdlM6hNDAE', duration: '5:30:00', color: '#ef4444' },
+  { id: 2, subject: 'DBMS', type: 'Revision', title: 'DBMS Quick Revision for Exams', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=1', duration: '45:00', color: '#ef4444' },
+  { id: 3, subject: 'DBMS', type: 'Detailed', title: 'Introduction to DBMS', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=2', duration: '12:00', color: '#ef4444' },
+  { id: 4, subject: 'DBMS', type: 'Detailed', title: 'ER Diagram Full Explanation', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=3', duration: '20:00', color: '#ef4444' },
+  { id: 5, subject: 'DBMS', type: 'Detailed', title: 'Normalization - 1NF, 2NF, 3NF, BCNF', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=4', duration: '25:00', color: '#ef4444' },
+  { id: 6, subject: 'DBMS', type: 'Revision', title: 'SQL Joins in 10 Minutes', channel: 'CodeWithHarry', link: 'https://www.youtube.com/watch?v=5', duration: '10:00', color: '#ef4444' },
+  { id: 7, subject: 'DBMS', type: 'One Shot', title: 'SQL Full Course | SQL Tutorial For Beginners', channel: 'Edureka', link: 'https://www.youtube.com/watch?v=6', duration: '4:00:00', color: '#ef4444' },
+  { id: 8, subject: 'DBMS', type: 'Detailed', title: 'Transactions & Concurrency Control', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=7', duration: '18:00', color: '#ef4444' },
+  { id: 9, subject: 'DBMS', type: 'Detailed', title: 'Relational Algebra', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=8', duration: '15:00', color: '#ef4444' },
+  { id: 10, subject: 'DBMS', type: 'Revision', title: 'DBMS Important Questions for BCA/BTech', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=9', duration: '35:00', color: '#ef4444' },
+
+  // DSA
+  { id: 11, subject: 'DSA', type: 'One Shot', title: 'Data Structures and Algorithms in C | 1 Shot', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=10', duration: '8:00:00', color: '#6c47ff' },
+  { id: 12, subject: 'DSA', type: 'Detailed', title: 'Introduction to Arrays', channel: 'Love Babbar', link: 'https://www.youtube.com/watch?v=11', duration: '22:00', color: '#6c47ff' },
+  { id: 13, subject: 'DSA', type: 'Detailed', title: 'Linked List Implementation', channel: 'CodeHelp', link: 'https://www.youtube.com/watch?v=12', duration: '30:00', color: '#6c47ff' },
+  { id: 14, subject: 'DSA', type: 'Detailed', title: 'Stack and Queue Data Structures', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=13', duration: '28:00', color: '#6c47ff' },
+  { id: 15, subject: 'DSA', type: 'Detailed', title: 'Binary Trees', channel: 'Striver', link: 'https://www.youtube.com/watch?v=14', duration: '40:00', color: '#6c47ff' },
+  { id: 16, subject: 'DSA', type: 'Detailed', title: 'Graph Traversal - BFS and DFS', channel: 'Abdul Bari', link: 'https://www.youtube.com/watch?v=15', duration: '35:00', color: '#6c47ff' },
+  { id: 17, subject: 'DSA', type: 'Revision', title: 'DSA Complete Revision before Interview', channel: 'Apna College', link: 'https://www.youtube.com/watch?v=16', duration: '2:00:00', color: '#6c47ff' },
+  { id: 18, subject: 'DSA', type: 'Revision', title: 'Top 50 DSA Questions', channel: 'CodeHelp', link: 'https://www.youtube.com/watch?v=17', duration: '1:30:00', color: '#6c47ff' },
+  { id: 19, subject: 'DSA', type: 'One Shot', title: 'C++ STL One Shot', channel: 'Striver', link: 'https://www.youtube.com/watch?v=18', duration: '1:15:00', color: '#6c47ff' },
+  { id: 20, subject: 'DSA', type: 'Detailed', title: 'Dynamic Programming Introduction', channel: 'Aditya Verma', link: 'https://www.youtube.com/watch?v=19', duration: '25:00', color: '#6c47ff' },
+
+  // Web Technology
+  { id: 21, subject: 'Web Technology', type: 'One Shot', title: 'HTML CSS Full Course in 1 Video', channel: 'SuperSimpleDev', link: 'https://www.youtube.com/watch?v=G3e-cpL7ofc', duration: '6:30:00', color: '#ec4899' },
+  { id: 22, subject: 'Web Technology', type: 'One Shot', title: 'JavaScript Tutorial for Beginners', channel: 'Programming with Mosh', link: 'https://www.youtube.com/watch?v=20', duration: '1:00:00', color: '#ec4899' },
+  { id: 23, subject: 'Web Technology', type: 'Detailed', title: 'CSS Flexbox Crash Course', channel: 'Traversy Media', link: 'https://www.youtube.com/watch?v=21', duration: '30:00', color: '#ec4899' },
+  { id: 24, subject: 'Web Technology', type: 'Detailed', title: 'CSS Grid Layout Crash Course', channel: 'Traversy Media', link: 'https://www.youtube.com/watch?v=22', duration: '25:00', color: '#ec4899' },
+  { id: 25, subject: 'Web Technology', type: 'Detailed', title: 'DOM Manipulation in JS', channel: 'Web Dev Simplified', link: 'https://www.youtube.com/watch?v=23', duration: '40:00', color: '#ec4899' },
+  { id: 26, subject: 'Web Technology', type: 'Detailed', title: 'Async/Await & Promises', channel: 'Fireship', link: 'https://www.youtube.com/watch?v=24', duration: '12:00', color: '#ec4899' },
+  { id: 27, subject: 'Web Technology', type: 'Revision', title: 'HTML & CSS Revision in 30 Mins', channel: 'CodeWithHarry', link: 'https://www.youtube.com/watch?v=25', duration: '35:00', color: '#ec4899' },
+  { id: 28, subject: 'Web Technology', type: 'Revision', title: 'JavaScript Important Concepts', channel: 'Akshay Saini', link: 'https://www.youtube.com/watch?v=26', duration: '45:00', color: '#ec4899' },
+  { id: 29, subject: 'Web Technology', type: 'One Shot', title: 'React JS Full Course', channel: 'freeCodeCamp', link: 'https://www.youtube.com/watch?v=27', duration: '7:00:00', color: '#ec4899' },
+  { id: 30, subject: 'Web Technology', type: 'Detailed', title: 'Building a REST API with Node.js', channel: 'Web Dev Simplified', link: 'https://www.youtube.com/watch?v=28', duration: '28:00', color: '#ec4899' },
+
+  // C++ OOP
+  { id: 31, subject: 'C++ OOP', type: 'One Shot', title: 'C++ OOP Complete Course', channel: 'CodeBeauty', link: 'https://www.youtube.com/watch?v=wN0x9eZLix4', duration: '1:30:00', color: '#f59e0b' },
+  { id: 32, subject: 'C++ OOP', type: 'Detailed', title: 'Classes and Objects in C++', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=29', duration: '20:00', color: '#f59e0b' },
+  { id: 33, subject: 'C++ OOP', type: 'Detailed', title: 'Constructors and Destructors', channel: 'CodeWithHarry', link: 'https://www.youtube.com/watch?v=30', duration: '15:00', color: '#f59e0b' },
+  { id: 34, subject: 'C++ OOP', type: 'Detailed', title: 'Inheritance in C++', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=31', duration: '22:00', color: '#f59e0b' },
+  { id: 35, subject: 'C++ OOP', type: 'Detailed', title: 'Polymorphism (Compile vs Run time)', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=32', duration: '18:00', color: '#f59e0b' },
+  { id: 36, subject: 'C++ OOP', type: 'Detailed', title: 'Virtual Functions and Abstract Classes', channel: 'CodeBeauty', link: 'https://www.youtube.com/watch?v=33', duration: '25:00', color: '#f59e0b' },
+  { id: 37, subject: 'C++ OOP', type: 'Revision', title: 'C++ OOP Quick Revision', channel: 'Apna College', link: 'https://www.youtube.com/watch?v=34', duration: '50:00', color: '#f59e0b' },
+  { id: 38, subject: 'C++ OOP', type: 'Revision', title: 'Top OOP Interview Questions', channel: 'Love Babbar', link: 'https://www.youtube.com/watch?v=35', duration: '45:00', color: '#f59e0b' },
+  { id: 39, subject: 'C++ OOP', type: 'One Shot', title: 'C++ Programming For Beginners', channel: 'freeCodeCamp', link: 'https://www.youtube.com/watch?v=36', duration: '4:00:00', color: '#f59e0b' },
+  { id: 40, subject: 'C++ OOP', type: 'Detailed', title: 'Friend Functions and Classes', channel: 'Jenny\'s Lectures', link: 'https://www.youtube.com/watch?v=37', duration: '14:00', color: '#f59e0b' },
+
+  // Digital Electronics
+  { id: 41, subject: 'Digital Electronics', type: 'One Shot', title: 'Digital Electronics Full Course', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=38', duration: '10:00:00', color: '#14b8a6' },
+  { id: 42, subject: 'Digital Electronics', type: 'Detailed', title: 'Number Systems', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=39', duration: '20:00', color: '#14b8a6' },
+  { id: 43, subject: 'Digital Electronics', type: 'Detailed', title: 'Logic Gates', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=40', duration: '15:00', color: '#14b8a6' },
+  { id: 44, subject: 'Digital Electronics', type: 'Detailed', title: 'Boolean Algebra', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=41', duration: '25:00', color: '#14b8a6' },
+  { id: 45, subject: 'Digital Electronics', type: 'Detailed', title: 'K-Map Simplification', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=42', duration: '30:00', color: '#14b8a6' },
+  { id: 46, subject: 'Digital Electronics', type: 'Detailed', title: 'Combinational Circuits (Adders, MUX)', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=43', duration: '35:00', color: '#14b8a6' },
+  { id: 47, subject: 'Digital Electronics', type: 'Detailed', title: 'Sequential Circuits (Flip Flops)', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=44', duration: '40:00', color: '#14b8a6' },
+  { id: 48, subject: 'Digital Electronics', type: 'Revision', title: 'Digital Logic Revision for Exams', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=45', duration: '1:00:00', color: '#14b8a6' },
+  { id: 49, subject: 'Digital Electronics', type: 'Revision', title: 'Important K-Map Questions', channel: 'Neso Academy', link: 'https://www.youtube.com/watch?v=46', duration: '25:00', color: '#14b8a6' },
+  { id: 50, subject: 'Digital Electronics', type: 'One Shot', title: 'Combinational vs Sequential Circuits', channel: 'Gate Smashers', link: 'https://www.youtube.com/watch?v=47', duration: '45:00', color: '#14b8a6' },
+
+  // Data Science
+  { id: 51, subject: 'Data Science', type: 'One Shot', title: 'Machine Learning Full Course', channel: 'Simplilearn', link: 'https://www.youtube.com/watch?v=48', duration: '9:00:00', color: '#8b5cf6' },
+  { id: 52, subject: 'Data Science', type: 'One Shot', title: 'Python for Data Science', channel: 'freeCodeCamp', link: 'https://www.youtube.com/watch?v=49', duration: '12:00:00', color: '#8b5cf6' },
+  { id: 53, subject: 'Data Science', type: 'Detailed', title: 'Intro to Pandas', channel: 'Corey Schafer', link: 'https://www.youtube.com/watch?v=50', duration: '35:00', color: '#8b5cf6' },
+  { id: 54, subject: 'Data Science', type: 'Detailed', title: 'NumPy Tutorial', channel: 'Programming with Mosh', link: 'https://www.youtube.com/watch?v=51', duration: '45:00', color: '#8b5cf6' },
+  { id: 55, subject: 'Data Science', type: 'Detailed', title: 'Matplotlib Crash Course', channel: 'Traversy Media', link: 'https://www.youtube.com/watch?v=52', duration: '30:00', color: '#8b5cf6' },
+  { id: 56, subject: 'Data Science', type: 'Detailed', title: 'Linear Regression Explained', channel: 'StatQuest', link: 'https://www.youtube.com/watch?v=53', duration: '28:00', color: '#8b5cf6' },
+  { id: 57, subject: 'Data Science', type: 'Detailed', title: 'Logistic Regression', channel: 'StatQuest', link: 'https://www.youtube.com/watch?v=54', duration: '25:00', color: '#8b5cf6' },
+  { id: 58, subject: 'Data Science', type: 'Revision', title: 'Data Science Concepts Revision', channel: 'Krish Naik', link: 'https://www.youtube.com/watch?v=55', duration: '1:30:00', color: '#8b5cf6' },
+  { id: 59, subject: 'Data Science', type: 'Revision', title: 'Top ML Interview Questions', channel: 'Edureka', link: 'https://www.youtube.com/watch?v=56', duration: '50:00', color: '#8b5cf6' },
+  { id: 60, subject: 'Data Science', type: 'Detailed', title: 'Decision Trees', channel: 'StatQuest', link: 'https://www.youtube.com/watch?v=57', duration: '18:00', color: '#8b5cf6' },
+
+  // Professional Skills
+  { id: 61, subject: 'Professional Skills', type: 'One Shot', title: 'Soft Skills Training', channel: 'Communication Coach', link: 'https://www.youtube.com/watch?v=58', duration: '1:30:00', color: '#10b981' },
+  { id: 62, subject: 'Professional Skills', type: 'Detailed', title: 'How to write a Resume', channel: 'Jeff Su', link: 'https://www.youtube.com/watch?v=59', duration: '15:00', color: '#10b981' },
+  { id: 63, subject: 'Professional Skills', type: 'Detailed', title: 'Interview Preparation Guide', channel: 'Apna College', link: 'https://www.youtube.com/watch?v=60', duration: '20:00', color: '#10b981' },
+  { id: 64, subject: 'Professional Skills', type: 'Detailed', title: 'Email Etiquette', channel: 'Jeff Su', link: 'https://www.youtube.com/watch?v=61', duration: '12:00', color: '#10b981' },
+  { id: 65, subject: 'Professional Skills', type: 'Revision', title: 'Corporate Communication Basics', channel: 'Skillopedia', link: 'https://www.youtube.com/watch?v=62', duration: '25:00', color: '#10b981' },
+  { id: 66, subject: 'Professional Skills', type: 'One Shot', title: 'Aptitude Test Preparation', channel: 'CareerRide', link: 'https://www.youtube.com/watch?v=63', duration: '3:00:00', color: '#10b981' },
+]

@@ -32,16 +32,11 @@ export default function LoginPage() {
         maxWidth: 400,
         textAlign: 'center'
       }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: 16,
-          background: 'linear-gradient(135deg, #6c47ff, #a855f7)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: 'white', fontWeight: 900, fontSize: 20,
-          boxShadow: '0 8px 16px rgba(108,71,255,0.25)',
-          margin: '0 auto 24px'
-        }}>
-          LMCST
-        </div>
+        <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
+          width: 80, height: 80, borderRadius: 16, objectFit: 'contain',
+          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+          margin: '0 auto 24px', display: 'block'
+        }} />
         
         <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginBottom: 8 }}>
           Welcome Back
