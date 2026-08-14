@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 
 const AppContext = createContext()
 
@@ -15,50 +16,136 @@ const BASE_LEADERBOARD = [
 ]
 
 export function AppProvider({ children }) {
-  // auth state
+  // ── Auth state ──────────────────────────────────────────────────────────────
+  // User object: { name, id, dbId } where dbId is the UUID from Supabase profiles table
   const [user, setUser] = useState(() => {
     try { return JSON.parse(localStorage.getItem('lmcst-user') || 'null') }
     catch { return null }
   })
 
-  // quizHistory: { [subjectId]: { score: number, total: number, completedAt: string, subjectName: string } }
-  const [quizHistory, setQuizHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('lmcst-quiz-history') || '{}') }
-    catch { return {} }
-  })
+  // quizHistory: { [subjectId]: { score, total, completedAt, subjectName } }
+  const [quizHistory, setQuizHistory] = useState({})
 
-  // Persist to localStorage on change
+  // Persist user to localStorage (lightweight session)
   useEffect(() => {
-    localStorage.setItem('lmcst-quiz-history', JSON.stringify(quizHistory))
     if (user) localStorage.setItem('lmcst-user', JSON.stringify(user))
     else localStorage.removeItem('lmcst-user')
-  }, [quizHistory, user])
+  }, [user])
 
-  const login = (name, id) => setUser({ name, id })
-  const logout = () => setUser(null)
+  // ── Load quiz history from Supabase on login ─────────────────────────────
+  useEffect(() => {
+    if (!user?.dbId) return
 
-  // User's total quiz points
+    const loadQuizHistory = async () => {
+      const { data, error } = await supabase
+        .from('quiz_results')
+        .select('subject_id, score, total, completed_at')
+        .eq('user_id', user.dbId)
+        .order('completed_at', { ascending: false })
+
+      if (error) {
+        console.error('Error loading quiz history:', error.message)
+        return
+      }
+
+      // Build history map — keep only the best score per subject
+      const historyMap = {}
+      for (const row of data) {
+        const existing = historyMap[row.subject_id]
+        if (!existing || row.score > existing.score) {
+          historyMap[row.subject_id] = {
+            score: row.score,
+            total: row.total,
+            completedAt: row.completed_at,
+          }
+        }
+      }
+      setQuizHistory(historyMap)
+    }
+
+    loadQuizHistory()
+  }, [user?.dbId])
+
+  // ── Login: look up or create a profile in Supabase ──────────────────────
+  const login = async (name, studentId) => {
+    // 1. Check if this student_id already exists
+    let { data: existing, error: fetchError } = await supabase
+      .from('profiles')
+      .select('id, full_name, student_id, base_points')
+      .eq('student_id', studentId)
+      .single()
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      // PGRST116 = "no rows found" — that's fine, we'll create one
+      console.error('Login fetch error:', fetchError.message)
+      return { error: 'Could not connect to the database. Please try again.' }
+    }
+
+    let profile = existing
+
+    // 2. If no existing profile, create one
+    if (!profile) {
+      const { data: created, error: insertError } = await supabase
+        .from('profiles')
+        .insert({ student_id: studentId, full_name: name })
+        .select()
+        .single()
+
+      if (insertError) {
+        console.error('Login insert error:', insertError.message)
+        return { error: 'Could not create your profile. Please try again.' }
+      }
+      profile = created
+    }
+
+    // 3. Set the user in state
+    setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id })
+    return { error: null }
+  }
+
+  const logout = () => {
+    setUser(null)
+    setQuizHistory({})
+  }
+
+  // ── Quiz points ──────────────────────────────────────────────────────────
   const quizPoints = Object.values(quizHistory).reduce((sum, h) => sum + h.score, 0)
-  const currentUserBasePoints = 2180
+  const currentUserBasePoints = user?.basePoints ?? 2180
   const currentUserTotalPoints = currentUserBasePoints + quizPoints
   const quizzesCompleted = Object.keys(quizHistory).length
 
-  // Save or update a quiz result (keeps best score)
-  const saveQuizResult = (subjectId, score, total, subjectName) => {
+  // ── Save quiz result to Supabase ────────────────────────────────────────
+  const saveQuizResult = async (subjectId, score, total, subjectName) => {
+    // Optimistic local update first
     setQuizHistory(prev => {
       const existing = prev[subjectId]
-      // Only update if new score is better
       if (existing && existing.score >= score) return prev
       return {
         ...prev,
         [subjectId]: { score, total, subjectName, completedAt: new Date().toISOString() }
       }
     })
+
+    // Persist to Supabase if user has a dbId
+    if (user?.dbId) {
+      const { error } = await supabase
+        .from('quiz_results')
+        .insert({
+          user_id: user.dbId,
+          subject_id: subjectId,
+          score,
+          total,
+        })
+
+      if (error) {
+        console.error('Error saving quiz result:', error.message)
+      }
+    }
   }
 
-  // Compute sorted leaderboard with updated current user points
+  // ── Build sorted leaderboard ─────────────────────────────────────────────
   const leaderboard = [...BASE_LEADERBOARD]
-  
+
   if (user) {
     leaderboard.push({
       name: user.name,

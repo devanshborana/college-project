@@ -1,17 +1,28 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
-import { LogIn, User, ShieldCheck } from 'lucide-react'
+import { LogIn, User, ShieldCheck, Loader } from 'lucide-react'
 
 export default function LoginPage() {
   const { login } = useApp()
   const [name, setName] = useState('')
   const [studentId, setStudentId] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    if (name.trim() && studentId.trim()) {
-      login(name, studentId)
+    if (!name.trim() || !studentId.trim()) return
+
+    setLoading(true)
+    setError(null)
+
+    const result = await login(name, studentId)
+
+    if (result?.error) {
+      setError(result.error)
     }
+
+    setLoading(false)
   }
 
   return (
@@ -56,6 +67,7 @@ export default function LoginPage() {
                 onChange={e => setName(e.target.value)}
                 placeholder="Enter your name" 
                 required
+                disabled={loading}
                 style={{
                   width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
                   border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
@@ -77,6 +89,7 @@ export default function LoginPage() {
                 onChange={e => setStudentId(e.target.value)}
                 placeholder="e.g. LMCST-2024-001" 
                 required
+                disabled={loading}
                 style={{
                   width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
                   border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
@@ -88,17 +101,43 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <button type="submit" style={{
-            background: 'linear-gradient(135deg, #6c47ff, #a855f7)',
+          {/* Error message */}
+          {error && (
+            <div style={{
+              background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10,
+              padding: '10px 14px', color: '#dc2626', fontSize: 13, textAlign: 'left'
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button type="submit" disabled={loading} style={{
+            background: loading ? '#c4b5fd' : 'linear-gradient(135deg, #6c47ff, #a855f7)',
             color: 'white', border: 'none', padding: '14px', borderRadius: 12,
-            fontSize: 15, fontWeight: 700, marginTop: 12, cursor: 'pointer',
+            fontSize: 15, fontWeight: 700, marginTop: 12, cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            boxShadow: '0 4px 12px rgba(108,71,255,0.2)'
+            boxShadow: '0 4px 12px rgba(108,71,255,0.2)',
+            transition: 'all 0.2s'
           }}>
-            <LogIn size={18} /> Access Portal
+            {loading ? (
+              <>
+                <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                Signing in...
+              </>
+            ) : (
+              <>
+                <LogIn size={18} /> Access Portal
+              </>
+            )}
           </button>
         </form>
+
+        <p style={{ color: '#9ca3af', fontSize: 12, marginTop: 20 }}>
+          First time? Just enter your name and ID to register automatically.
+        </p>
       </div>
+
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
     </div>
   )
 }

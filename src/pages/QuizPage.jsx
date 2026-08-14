@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, RotateCcw, BookOpen } from 'lucide-react'
-import { quizData } from '../data/quizData'
+import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, RotateCcw, BookOpen, Loader } from 'lucide-react'
+import { quizData as staticQuizData } from '../data/quizData'
+import { supabase } from '../lib/supabase'
 import { useApp } from '../context/AppContext'
 
 const QUIZ_DURATION = 600 // 10 minutes in seconds
@@ -18,7 +19,46 @@ export default function QuizPage() {
   const navigate = useNavigate()
   const { saveQuizResult, quizHistory } = useApp()
 
-  const quiz = quizData[subjectId]
+  // Try to load questions from Supabase; fall back to static data
+  const [quiz, setQuiz] = useState(null)
+  const [loadingQuiz, setLoadingQuiz] = useState(true)
+
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      setLoadingQuiz(true)
+
+      const { data: subjectData } = await supabase
+        .from('subjects')
+        .select('id, title, icon')
+        .eq('id', subjectId)
+        .single()
+
+      const { data: questionsData } = await supabase
+        .from('questions')
+        .select('question_text, options, correct_answer_index')
+        .eq('subject_id', subjectId)
+
+      if (subjectData && questionsData && questionsData.length > 0) {
+        // Loaded from Supabase
+        setQuiz({
+          title: subjectData.title,
+          icon: subjectData.icon,
+          questions: questionsData.map(q => ({
+            q: q.question_text,
+            opts: q.options,
+            ans: q.correct_answer_index
+          }))
+        })
+      } else {
+        // Fall back to static data
+        setQuiz(staticQuizData[subjectId] || null)
+      }
+
+      setLoadingQuiz(false)
+    }
+
+    fetchQuiz()
+  }, [subjectId])
 
   const [phase, setPhase] = useState('intro') // 'intro' | 'quiz' | 'result'
   const [current, setCurrent] = useState(0)
@@ -57,6 +97,16 @@ export default function QuizPage() {
   useEffect(() => {
     if (phase === 'quiz' && timeLeft === 0) submitQuiz()
   }, [phase, timeLeft, submitQuiz])
+
+  if (loadingQuiz) {
+    return (
+      <div className="page-content" style={{ textAlign: 'center', padding: 60 }}>
+        <Loader size={40} color="#6c47ff" style={{ margin: '0 auto 16px', animation: 'spin 1s linear infinite' }} />
+        <p style={{ color: '#6b7280' }}>Loading quiz questions...</p>
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
+    )
+  }
 
   if (!quiz) {
     return (
