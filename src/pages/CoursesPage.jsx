@@ -1,4 +1,4 @@
-import { Youtube, ExternalLink, PlayCircle } from 'lucide-react'
+import { MonitorPlay, ExternalLink, PlayCircle } from 'lucide-react'
 
 export default function CoursesPage() {
   const courses = [
@@ -74,7 +74,7 @@ export default function CoursesPage() {
                   width: 48, height: 48, borderRadius: 12, background: `${course.color}15`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
-                  <Youtube size={26} color={course.color} />
+                  <MonitorPlay size={26} color={course.color} />
                 </div>
                 <ExternalLink size={18} color="#9ca3af" />
               </div>
