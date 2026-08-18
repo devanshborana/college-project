@@ -89,7 +89,7 @@ export function AppProvider({ children }) {
           .from('profiles')
           .select('id, full_name, student_id, base_points')
           .eq('student_id', googleEmail)
-          .single()
+          .maybeSingle()
 
         // If no profile exists, create one
         if (!profile) {
