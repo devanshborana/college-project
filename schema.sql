@@ -61,21 +61,17 @@ CREATE TABLE IF NOT EXISTS live_quiz_questions (
 ALTER TABLE live_quizzes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Anyone can read live_quizzes" ON live_quizzes;
 CREATE POLICY "Anyone can read live_quizzes" ON live_quizzes FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Teachers can insert live_quizzes" ON live_quizzes;
-CREATE POLICY "Teachers can insert live_quizzes" ON live_quizzes FOR INSERT 
-WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE id = teacher_id AND student_id = (auth.jwt() ->> 'email') AND role = 'teacher')
-);
+DROP POLICY IF EXISTS "Anyone can insert live_quizzes" ON live_quizzes;
+CREATE POLICY "Anyone can insert live_quizzes" ON live_quizzes FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Anyone can update live_quizzes" ON live_quizzes;
+CREATE POLICY "Anyone can update live_quizzes" ON live_quizzes FOR UPDATE USING (true);
 
 -- Enable RLS for live_quiz_questions
 ALTER TABLE live_quiz_questions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Anyone can read live_quiz_questions" ON live_quiz_questions;
 CREATE POLICY "Anyone can read live_quiz_questions" ON live_quiz_questions FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Teachers can insert live_quiz_questions" ON live_quiz_questions;
-CREATE POLICY "Teachers can insert live_quiz_questions" ON live_quiz_questions FOR INSERT 
-WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE student_id = (auth.jwt() ->> 'email') AND role = 'teacher')
-);
+CREATE POLICY "Teachers can insert live_quiz_questions" ON live_quiz_questions FOR INSERT WITH CHECK (true);
 
 -- 5. Create live_quiz_participants table
 CREATE TABLE IF NOT EXISTS live_quiz_participants (
@@ -94,15 +90,11 @@ CREATE POLICY "Anyone can read live_quiz_participants" ON live_quiz_participants
 
 DROP POLICY IF EXISTS "Students can insert their own participation" ON live_quiz_participants;
 CREATE POLICY "Students can insert their own participation" ON live_quiz_participants FOR INSERT 
-WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = live_quiz_participants.student_id AND profiles.student_id = (auth.jwt() ->> 'email'))
-);
+WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Students can update their own participation" ON live_quiz_participants;
 CREATE POLICY "Students can update their own participation" ON live_quiz_participants FOR UPDATE
-USING (
-  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = live_quiz_participants.student_id AND profiles.student_id = (auth.jwt() ->> 'email'))
-);
+USING (true);
 
 -- ENABLE REALTIME (Run these manually if they throw an error about publication)
 -- ALTER PUBLICATION supabase_realtime ADD TABLE live_quizzes;

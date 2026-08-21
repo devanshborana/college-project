@@ -43,7 +43,7 @@ export default function TeacherHostQuizPage() {
         // Load existing participants
         const { data: partData } = await supabase
           .from('live_quiz_participants')
-          .select(`*, profiles(name)`)
+          .select(`*, profiles(full_name)`)
           .eq('quiz_id', quizId)
         
         setParticipants(partData || [])
@@ -67,7 +67,7 @@ export default function TeacherHostQuizPage() {
         // Fetch the user's name when they join
         const { data: profile } = await supabase
           .from('profiles')
-          .select('name')
+          .select('full_name')
           .eq('id', payload.new.student_id)
           .single()
 
@@ -222,9 +222,9 @@ export default function TeacherHostQuizPage() {
                   <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#f9fafb', borderRadius: 8, border: '1px solid #f3f4f6' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>
-                        {p.profiles?.name?.charAt(0) || '?'}
+                        {p.profiles?.full_name?.charAt(0) || '?'}
                       </div>
-                      <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>{p.profiles?.name || 'Student'}</span>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>{p.profiles?.full_name || 'Student'}</span>
                     </div>
                     <span style={{ fontSize: 13, fontWeight: 700, color: '#6c47ff' }}>{p.score} pts</span>
                   </div>

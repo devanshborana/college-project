@@ -83,7 +83,7 @@ function QuizPageContent() {
         // 4. Fetch existing participants
         const { data: pData } = await supabase
           .from('live_quiz_participants')
-          .select(`*, profiles(name)`)
+          .select(`*, profiles(full_name)`)
           .eq('quiz_id', quizDataDB.id)
         setParticipants(pData || [])
 
@@ -97,7 +97,7 @@ function QuizPageContent() {
         partChannel = supabase.channel(`student_parts_${quizDataDB.id}`)
           .on('postgres_changes', { event: '*', schema: 'public', table: 'live_quiz_participants', filter: `quiz_id=eq.${quizDataDB.id}` }, async (payload) => {
             if (payload.eventType === 'INSERT') {
-              const { data: profile } = await supabase.from('profiles').select('name').eq('id', payload.new.student_id).single()
+              const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', payload.new.student_id).single()
               setParticipants(prev => [...prev, { ...payload.new, profiles: profile }])
             } else if (payload.eventType === 'UPDATE') {
               setParticipants(prev => prev.map(p => p.id === payload.new.id ? { ...p, ...payload.new } : p))
@@ -189,7 +189,7 @@ function QuizPageContent() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
               {participants.map(p => (
                 <div key={p.id} style={{ padding: '6px 12px', background: p.student_id === user?.dbId ? '#22c55e' : 'rgba(255,255,255,0.15)', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
-                  {p.student_id === user?.dbId ? 'You' : p.profiles?.name || 'Student'}
+                  {p.student_id === user?.dbId ? 'You' : p.profiles?.full_name || 'Student'}
                 </div>
               ))}
             </div>
@@ -294,7 +294,7 @@ function QuizPageContent() {
                   {i + 1}
                 </div>
                 <div style={{ flex: 1, fontWeight: student.student_id === user?.dbId ? 700 : 500, color: '#1e1b4b', fontSize: 16 }}>
-                  {student.profiles?.name || 'Student'} {student.student_id === user?.dbId && <span style={{ fontSize: 11, color: '#059669', background: '#d1fae5', padding: '3px 8px', borderRadius: 20, marginLeft: 8 }}>You</span>}
+                  {student.profiles?.full_name || 'Student'} {student.student_id === user?.dbId && <span style={{ fontSize: 11, color: '#059669', background: '#d1fae5', padding: '3px 8px', borderRadius: 20, marginLeft: 8 }}>You</span>}
                 </div>
                 <div style={{ fontWeight: 800, color: '#1e1b4b', fontSize: 18 }}>
                   {student.score} <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>pts</span>
