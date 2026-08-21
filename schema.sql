@@ -95,13 +95,13 @@ CREATE POLICY "Anyone can read live_quiz_participants" ON live_quiz_participants
 DROP POLICY IF EXISTS "Students can insert their own participation" ON live_quiz_participants;
 CREATE POLICY "Students can insert their own participation" ON live_quiz_participants FOR INSERT 
 WITH CHECK (
-  EXISTS (SELECT 1 FROM profiles WHERE id = student_id AND student_id = (auth.jwt() ->> 'email'))
+  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = live_quiz_participants.student_id AND profiles.student_id = (auth.jwt() ->> 'email'))
 );
 
 DROP POLICY IF EXISTS "Students can update their own participation" ON live_quiz_participants;
 CREATE POLICY "Students can update their own participation" ON live_quiz_participants FOR UPDATE
 USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = student_id AND student_id = (auth.jwt() ->> 'email'))
+  EXISTS (SELECT 1 FROM profiles WHERE profiles.id = live_quiz_participants.student_id AND profiles.student_id = (auth.jwt() ->> 'email'))
 );
 
 -- ENABLE REALTIME (Run these manually if they throw an error about publication)
