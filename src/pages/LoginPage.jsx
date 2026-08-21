@@ -15,20 +15,23 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const { login, loginWithGoogle } = useApp()
+  const [isSignUp, setIsSignUp] = useState(false)
   const [name, setName] = useState('')
-  const [studentId, setStudentId] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [error, setError] = useState(null)
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    if (!name.trim() || !studentId.trim()) return
+    if (!email.trim() || !password.trim()) return
+    if (isSignUp && !name.trim()) return
 
     setLoading(true)
     setError(null)
 
-    const result = await login(name, studentId)
+    const result = await login(email, password, isSignUp, name)
 
     if (result?.error) {
       setError(result.error)
@@ -75,10 +78,10 @@ export default function LoginPage() {
         }} />
         
         <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginBottom: 8 }}>
-          Welcome Back
+          {isSignUp ? 'Create an Account' : 'Welcome Back'}
         </h1>
         <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 28 }}>
-          Sign in to access the Student Learning Portal
+          {isSignUp ? 'Sign up to join the Student Learning Portal' : 'Sign in to access the Student Learning Portal'}
         </p>
 
         {/* Google Sign-In Button */}
@@ -123,20 +126,44 @@ export default function LoginPage() {
           margin: '24px 0', color: '#9ca3af', fontSize: 13
         }}>
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          or use Student ID
+          or use Email
           <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {isSignUp && (
+            <div style={{ textAlign: 'left' }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Full Name</label>
+              <div style={{ position: 'relative' }}>
+                <User size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <input 
+                  type="text" 
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  placeholder="Enter your name" 
+                  required={isSignUp}
+                  disabled={loading || googleLoading}
+                  style={{
+                    width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
+                    border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
+                    transition: 'all 0.2s', background: '#f9fafb'
+                  }}
+                  onFocus={e => e.target.style.borderColor = '#6c47ff'}
+                  onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                />
+              </div>
+            </div>
+          )}
+
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Full Name</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Email</label>
             <div style={{ position: 'relative' }}>
               <User size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input 
-                type="text" 
-                value={name}
-                onChange={e => setName(e.target.value)}
-                placeholder="Enter your name" 
+                type="email" 
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com" 
                 required
                 disabled={loading || googleLoading}
                 style={{
@@ -151,14 +178,14 @@ export default function LoginPage() {
           </div>
 
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Student ID</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Password</label>
             <div style={{ position: 'relative' }}>
               <ShieldCheck size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input 
-                type="text" 
-                value={studentId}
-                onChange={e => setStudentId(e.target.value)}
-                placeholder="e.g. LMCST-2024-001" 
+                type="password" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••" 
                 required
                 disabled={loading || googleLoading}
                 style={{
@@ -193,18 +220,27 @@ export default function LoginPage() {
             {loading ? (
               <>
                 <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                Signing in...
+                {isSignUp ? 'Signing up...' : 'Signing in...'}
               </>
             ) : (
               <>
-                <LogIn size={18} /> Access Portal
+                <LogIn size={18} /> {isSignUp ? 'Create Account' : 'Access Portal'}
               </>
             )}
           </button>
         </form>
 
-        <p style={{ color: '#9ca3af', fontSize: 12, marginTop: 20 }}>
-          First time? Just sign in with Google or enter your details to register.
+        <p style={{ color: '#9ca3af', fontSize: 13, marginTop: 20 }}>
+          {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
+          <button 
+            onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
+            style={{ 
+              background: 'none', border: 'none', color: '#6c47ff', 
+              fontWeight: 600, cursor: 'pointer', padding: 0 
+            }}
+          >
+            {isSignUp ? 'Sign in here' : 'Sign up here'}
+          </button>
         </p>
       </div>
 

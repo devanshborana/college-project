@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, CheckCircle, Clock, Circle, Filter, ArrowLeft, Code2, Play, Loader2 } from 'lucide-react'
 
 import { subjectDetails } from '../data/subjectDetails'
+import { supabase } from '../lib/supabase'
 
 const allProblems = Object.entries(subjectDetails).flatMap(([subjId, data]) => {
   if (!data.codingProblems) return []
@@ -51,8 +52,41 @@ export default function ProblemSetPage() {
   const [code, setCode] = useState('')
   const [output, setOutput] = useState('')
   const [isRunning, setIsRunning] = useState(false)
+  const [dbProblems, setDbProblems] = useState([])
+  const [loadingDb, setLoadingDb] = useState(true)
 
-  const problems = allProblems.map(p => ({
+  useEffect(() => {
+    const fetchProblems = async () => {
+      if (!supabase) {
+        setLoadingDb(false)
+        return
+      }
+      try {
+        const { data, error } = await supabase
+          .from('coding_problems')
+          .select('*')
+          .order('created_at', { ascending: false })
+        
+        if (data) {
+          const mapped = data.map(p => ({
+            ...p,
+            course: p.subject_id === 'dsa' ? 'Data Structures (C)' : p.subject_id === 'oop' ? 'Object Oriented (C++)' : p.subject_id === 'web-tech' ? 'Web Technologies' : p.subject_id.toUpperCase(),
+            lang: p.subject_id === 'oop' ? 'c++' : p.subject_id === 'web-tech' ? 'html' : 'c'
+          }))
+          setDbProblems(mapped)
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic problems:', err)
+      } finally {
+        setLoadingDb(false)
+      }
+    }
+    fetchProblems()
+  }, [])
+
+  const combinedProblems = [...dbProblems, ...allProblems]
+
+  const problems = combinedProblems.map(p => ({
     ...p,
     status: solvedIds.includes(p.id) ? 'Solved' : inProgressIds.includes(p.id) ? 'In Progress' : 'Not Attempted'
   }))

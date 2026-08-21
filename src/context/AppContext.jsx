@@ -3,17 +3,7 @@ import { supabase } from '../lib/supabase'
 
 const AppContext = createContext()
 
-const BASE_LEADERBOARD = [
-  { rank: 1, name: 'Priya Sharma',   id: 'LMCST-2024-042', basePoints: 2840, solved: 68, badges: 12, color: '#f59e0b' },
-  { rank: 2, name: 'Rahul Verma',    id: 'LMCST-2024-017', basePoints: 2610, solved: 61, badges: 9,  color: '#6c47ff' },
-  { rank: 3, name: 'Ananya Singh',   id: 'LMCST-2024-031', basePoints: 2430, solved: 57, badges: 8,  color: '#a855f7' },
-  { rank: 4, name: 'Kartik Bhatt',   id: 'LMCST-2024-059', basePoints: 1950, solved: 47, badges: 6,  color: '#22c55e' },
-  { rank: 5, name: 'Sneha Patel',    id: 'LMCST-2024-023', basePoints: 1780, solved: 43, badges: 5,  color: '#ec4899' },
-  { rank: 6, name: 'Vivek Joshi',    id: 'LMCST-2024-088', basePoints: 1640, solved: 39, badges: 5,  color: '#f97316' },
-  { rank: 7, name: 'Meera Gupta',    id: 'LMCST-2024-014', basePoints: 1520, solved: 36, badges: 4,  color: '#14b8a6' },
-  { rank: 8, name: 'Arjun Rathore',  id: 'LMCST-2024-065', basePoints: 1380, solved: 32, badges: 3,  color: '#6c47ff' },
-  { rank: 9, name: 'Kavita Pareek',  id: 'LMCST-2024-038', basePoints: 1240, solved: 29, badges: 3,  color: '#ef4444' },
-]
+// BASE_LEADERBOARD removed, using database instead
 
 export function AppProvider({ children }) {
   // ── Auth state ──────────────────────────────────────────────────────────────
@@ -74,6 +64,31 @@ export function AppProvider({ children }) {
     loadQuizHistory()
   }, [user?.dbId])
 
+  // ── Load Real Leaderboard from Supabase ─────────────────────────────────
+  const [dbLeaderboard, setDbLeaderboard] = useState([])
+  useEffect(() => {
+    if (!supabase) return
+    const fetchLeaderboard = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, student_id, base_points')
+      
+      if (data && !error) {
+        const colors = ['#f59e0b', '#6c47ff', '#a855f7', '#22c55e', '#ec4899', '#f97316', '#14b8a6', '#ef4444']
+        setDbLeaderboard(data.map((p, i) => ({
+          name: p.full_name || p.student_id,
+          id: p.student_id, // student_id acts as the email/id
+          dbId: p.id,
+          basePoints: p.base_points || 0,
+          solved: 0,
+          badges: 0,
+          color: colors[i % colors.length]
+        })))
+      }
+    }
+    fetchLeaderboard()
+  }, [])
+
   // ── Google OAuth: listen for auth state changes ─────────────────────────
   useEffect(() => {
     if (!supabase) return
@@ -87,7 +102,7 @@ export function AppProvider({ children }) {
         // Look up existing profile by email as student_id
         let { data: profile } = await supabase
           .from('profiles')
-          .select('id, full_name, student_id, base_points')
+          .select('id, full_name, student_id, base_points, role')
           .eq('student_id', googleEmail)
           .maybeSingle()
 
@@ -102,7 +117,7 @@ export function AppProvider({ children }) {
         }
 
         if (profile) {
-          setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id })
+          setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id, role: profile.role || 'student' })
         }
       }
     })
@@ -125,46 +140,32 @@ export function AppProvider({ children }) {
     return { error: null }
   }
 
-  // ── Manual Login: look up or create a profile in Supabase ───────────────
-  const login = async (name, studentId) => {
-    // If Supabase is not available, fall back to local-only mode
+  // ── Manual Login: Supabase Email & Password Auth ────────────────────────
+  const login = async (email, password, isSignUp = false, name = '') => {
     if (!supabase) {
-      setUser({ name, id: studentId })
+      setUser({ name: name || email, id: email })
       return { error: null }
     }
 
-    // 1. Check if this student_id already exists
-    let { data: existing, error: fetchError } = await supabase
-      .from('profiles')
-      .select('id, full_name, student_id, base_points')
-      .eq('student_id', studentId)
-      .single()
-
-    if (fetchError && fetchError.code !== 'PGRST116') {
-      console.error('Login fetch error:', fetchError.message)
-      return { error: 'Could not connect to the database. Please try again.' }
+    if (isSignUp) {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: name }
+        }
+      })
+      if (error) return { error: error.message }
+      // onAuthStateChange handles creating the profile and setting user state
+      return { error: null }
+    } else {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      if (error) return { error: error.message }
+      return { error: null }
     }
-
-    let profile = existing
-
-    // 2. If no existing profile, create one
-    if (!profile) {
-      const { data: created, error: insertError } = await supabase
-        .from('profiles')
-        .insert({ student_id: studentId, full_name: name })
-        .select()
-        .single()
-
-      if (insertError) {
-        console.error('Login insert error:', insertError.message)
-        return { error: 'Could not create your profile. Please try again.' }
-      }
-      profile = created
-    }
-
-    // 3. Set the user in state
-    setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id })
-    return { error: null }
   }
 
   // ── Logout ──────────────────────────────────────────────────────────────
@@ -178,8 +179,8 @@ export function AppProvider({ children }) {
 
   // ── Quiz points ──────────────────────────────────────────────────────────
   const quizPoints = Object.values(quizHistory).reduce((sum, h) => sum + h.score, 0)
-  const currentUserBasePoints = user?.basePoints ?? 2180
-  const currentUserTotalPoints = currentUserBasePoints + quizPoints
+  const currentUserBasePoints = user?.basePoints ?? 0
+  const currentUserTotalPoints = currentUserBasePoints
   const quizzesCompleted = Object.keys(quizHistory).length
 
   // ── Save quiz result to Supabase ────────────────────────────────────────
@@ -212,25 +213,36 @@ export function AppProvider({ children }) {
   }
 
   // ── Build sorted leaderboard ─────────────────────────────────────────────
-  const leaderboard = [...BASE_LEADERBOARD]
+  const leaderboard = dbLeaderboard.map(p => {
+    if (user && p.id === user.id) {
+      return {
+        ...p,
+        isCurrentUser: true,
+        points: currentUserTotalPoints
+      }
+    }
+    return {
+      ...p,
+      isCurrentUser: false,
+      points: p.basePoints
+    }
+  })
 
-  if (user) {
+  // If user just signed up and is not yet in the fetched dbLeaderboard
+  if (user && !leaderboard.find(p => p.id === user.id)) {
     leaderboard.push({
       name: user.name,
       id: user.id,
       basePoints: currentUserBasePoints,
-      solved: 52,
-      badges: 7,
+      solved: 0,
+      badges: 0,
       color: '#3b82f6',
-      isCurrentUser: true
+      isCurrentUser: true,
+      points: currentUserTotalPoints
     })
   }
 
   const sortedLeaderboard = leaderboard
-    .map(s => ({
-      ...s,
-      points: s.isCurrentUser ? currentUserTotalPoints : s.basePoints,
-    }))
     .sort((a, b) => b.points - a.points)
     .map((s, i) => ({ ...s, rank: i + 1 }))
 

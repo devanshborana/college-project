@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import {
   Home, BookOpen, FileText, Code2, Trophy,
-  GraduationCap, Bell, Search, ChevronDown, MonitorPlay, HelpCircle
+  GraduationCap, Bell, Search, ChevronDown, MonitorPlay, HelpCircle, Zap
 } from 'lucide-react'
 import { AppProvider } from './context/AppContext'
 import HomePage from './pages/HomePage'
@@ -12,10 +12,14 @@ import PlaygroundPage from './pages/PlaygroundPage'
 import ProblemSetPage from './pages/ProblemSetPage'
 import LeaderboardPage from './pages/LeaderboardPage'
 import QuizPage from './pages/QuizPage'
+import LiveQuizPage from './pages/LiveQuizPage'
+import TeacherDashboardPage from './pages/TeacherDashboardPage'
+import TeacherHostQuizPage from './pages/TeacherHostQuizPage'
 import LoginPage from './pages/LoginPage'
 import { useApp } from './context/AppContext'
 
 function Sidebar() {
+  const { user } = useApp()
   return (
     <aside className="sidebar">
       <div className="flex flex-col items-center mb-6">
@@ -38,12 +42,20 @@ function Sidebar() {
         <NavLink to="/problems" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <HelpCircle size={20} /><span className="nav-item-label">Question Bank</span>
         </NavLink>
+        <NavLink to="/live-quiz" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+          <Zap size={20} /><span className="nav-item-label">Live Quiz</span>
+        </NavLink>
         <NavLink to="/playground" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Code2 size={20} /><span className="nav-item-label">Playground</span>
         </NavLink>
         <NavLink to="/leaderboard" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
           <Trophy size={20} /><span className="nav-item-label">Leaderboard</span>
         </NavLink>
+        {user?.role === 'teacher' && (
+          <NavLink to="/teacher" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ marginTop: 'auto', background: '#f5f3ff', color: '#6c47ff' }}>
+            <FileText size={20} /><span className="nav-item-label">Teacher Portal</span>
+          </NavLink>
+        )}
       </nav>
     </aside>
   )
@@ -52,6 +64,19 @@ function Sidebar() {
 function Header() {
   const { user, logout } = useApp()
   const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
   
   if (!user) return null
   
@@ -78,7 +103,7 @@ function Header() {
         <button className="icon-btn"><Bell size={17} /></button>
         <button className="icon-btn"><GraduationCap size={17} /></button>
         <div className="avatar">{initials}</div>
-        <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }} ref={dropdownRef}>
           <div onClick={() => setShowDropdown(!showDropdown)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b' }}>{user.name}</div>
@@ -128,8 +153,11 @@ function MainApp() {
           <Route path="/curriculum"  element={<CurriculumPage />} />
           <Route path="/other-courses" element={<CoursesPage />} />
           <Route path="/problems"    element={<ProblemSetPage />} />
+          <Route path="/live-quiz"   element={<LiveQuizPage />} />
           <Route path="/playground"  element={<PlaygroundPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/teacher"     element={<TeacherDashboardPage />} />
+          <Route path="/teacher/host/:quizId" element={<TeacherHostQuizPage />} />
           <Route path="/quiz/:subjectId" element={<QuizPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
