@@ -267,8 +267,11 @@ function QuizPageContent() {
     const hasAnswered = selected !== undefined
 
     return (
-      <div className="page-content max-w-3xl mx-auto">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div className="page-content max-w-5xl mx-auto flex flex-col lg:flex-row gap-6">
+        
+        {/* Left Col: Main Question Area */}
+        <div className="flex-2 w-full lg:w-2/3">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontWeight: 700, color: '#1e1b4b', fontSize: 18 }}>{quiz.title}</div>
           <div style={{ padding: '6px 16px', background: '#f5f3ff', color: '#6c47ff', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>
             Question {qIndex + 1} of {questions.length}
