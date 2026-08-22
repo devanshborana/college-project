@@ -67,7 +67,7 @@ function QuizPageContent() {
           .from('live_quiz_questions')
           .select('*')
           .eq('quiz_id', quizDataDB.id)
-          .order('created_at', { ascending: true })
+          .order('id', { ascending: true })
           
         setQuestions(questionsData || [])
 

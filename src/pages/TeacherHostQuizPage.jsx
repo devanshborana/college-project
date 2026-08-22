@@ -37,7 +37,7 @@ export default function TeacherHostQuizPage() {
           .from('live_quiz_questions')
           .select('*')
           .eq('quiz_id', quizId)
-          .order('created_at', { ascending: true }) // assuming order, or just let DB sort
+          .order('id', { ascending: true })
         setQuestions(questionsData || [])
         
         // Load existing participants
