@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS live_quizzes (
   teacher_id uuid REFERENCES profiles(id),
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+ALTER TABLE live_quizzes ADD COLUMN IF NOT EXISTS current_question_index integer DEFAULT -1;
 
 -- 4. Create live_quiz_questions table
 CREATE TABLE IF NOT EXISTS live_quiz_questions (
@@ -86,6 +87,8 @@ CREATE TABLE IF NOT EXISTS live_quiz_participants (
   joined_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   UNIQUE(quiz_id, student_id)
 );
+ALTER TABLE live_quiz_participants ADD COLUMN IF NOT EXISTS approval_status text DEFAULT 'pending';
+ALTER TABLE live_quiz_participants ADD COLUMN IF NOT EXISTS denial_count integer DEFAULT 0;
 
 -- Enable RLS for live_quiz_participants
 ALTER TABLE live_quiz_participants ENABLE ROW LEVEL SECURITY;
