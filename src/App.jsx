@@ -105,7 +105,7 @@ function Header() {
         <div className="avatar">{initials}</div>
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <div onClick={() => setShowDropdown(!showDropdown)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-            <div>
+            <div className="header-user-info">
               <div style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b' }}>{user.name}</div>
               <div style={{ fontSize: 10, color: '#6b7280' }}>ID: {user.id}</div>
             </div>

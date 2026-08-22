@@ -45,10 +45,27 @@ body {
   border-right: 1px solid #e8e4ff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 16px 0;
+  padding: 24px 0;
   z-index: 100;
   box-shadow: 2px 0 12px rgba(108, 71, 255, 0.06);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: 64px;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid #e8e4ff;
+  }
+  .sidebar-logo, .nav-grit { display: none; }
+  .header-left { display: none; }
+  .header-search { margin-left: 0; }
+  .main-layout { margin-left: 0 !important; padding-bottom: 64px; }
 }
 
 .sidebar-logo {
@@ -1275,21 +1292,61 @@ body {
 
 .grit-more-btn:hover { border-color: var(--primary); color: var(--primary); }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-  .home-grid { grid-template-columns: 1fr; }
-  .problem-set-layout { grid-template-columns: 1fr; }
-  .playground-layout { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
-  .lb-header, .lb-row { grid-template-columns: 50px 1fr 80px 80px; }
-  .lb-header > *:nth-child(4), .lb-row > *:nth-child(4) { display: none; }
-}
-
 @media (max-width: 768px) {
-  :root { --sidebar-width: 64px; }
+  :root { 
+    --sidebar-width: 0px; 
+    --header-height: 60px;
+  }
+  
+  /* Convert Sidebar to Bottom Nav */
+  .sidebar {
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: 64px;
+    flex-direction: row;
+    padding: 0;
+    border-right: none;
+    border-top: 1px solid #e8e4ff;
+    justify-content: space-around;
+    z-index: 999;
+  }
+  
+  .sidebar-logo {
+    display: none;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+  }
+
+  .nav-item {
+    height: 100%;
+    width: 50px;
+    border-radius: 0;
+    margin: 0;
+  }
+  
   .nav-item-label { display: none; }
-  .nav-item { height: 52px; width: 52px; }
+  
+  .main-layout {
+    margin-left: 0;
+    margin-bottom: 64px;
+  }
+  
+  .header {
+    left: 0;
+    padding: 0 16px;
+  }
+  
   .header-search { display: none; }
-  .college-name { font-size: 12px; }
+  .college-tagline { display: none; }
+  .college-name { font-size: 14px; }
+  .header-user-info { display: none; } /* Add this class to App.jsx to hide name */
+
   .page-content { padding: 16px; }
   .home-grid { grid-template-columns: 1fr; }
   .promo-banner { font-size: 11px; padding: 10px 16px; }
@@ -1299,11 +1356,9 @@ body {
 }
 
 @media (max-width: 480px) {
-  :root { --sidebar-width: 0px; }
-  .sidebar { transform: translateX(-100%); }
-  .main-layout { margin-left: 0; }
   .playground-layout { grid-template-columns: 1fr; height: auto; }
   .playground-editor-pane { height: 50vh; }
+  .college-name { font-size: 12px; }
 }
 
 /* Skeleton loading animation */

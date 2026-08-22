@@ -134,39 +134,36 @@ export default function TeacherHostQuizPage() {
         <ArrowLeft size={16} /> Back to Dashboard
       </button>
 
-      <div className="card" style={{ padding: 32, marginBottom: 24, background: 'linear-gradient(135deg, #6c47ff 0%, #a855f7 100%)', color: 'white' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div style={{ fontSize: 13, textTransform: 'uppercase', letterSpacing: 1, color: '#a5b4fc', marginBottom: 8, fontWeight: 700 }}>Host Dashboard</div>
-            <h1 style={{ fontSize: 28, fontWeight: 800, margin: 0 }}>{quiz.title}</h1>
-            <div style={{ fontSize: 15, color: '#c7d2fe', marginTop: 8 }}>{questions.length} Questions • {participants.length} Students Joined</div>
-          </div>
-          <div style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>
-            Status: {quiz.status}
+      <div className="p-6 md:p-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-lg shadow-indigo-500/20">
+        <div className="text-white">
+          <h1 className="text-2xl font-extrabold mb-2">{quiz.title}</h1>
+          <div className="flex flex-wrap gap-4 text-sm font-medium opacity-90">
+            <span className="flex items-center gap-1.5"><Clock size={16} /> {new Date(quiz.scheduled_for).toLocaleString()}</span>
+            <span className="flex items-center gap-1.5"><Users size={16} /> {participants.length} Students</span>
           </div>
         </div>
-
-        <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
+        
+        <div className="flex flex-wrap gap-3 w-full md:w-auto">
           {isScheduled && (
-            <button onClick={handleStartWaitingRoom} style={{ padding: '12px 24px', borderRadius: 8, border: 'none', background: 'white', color: '#6c47ff', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, boxShadow: '0 4px 14px rgba(0,0,0,0.1)' }}>
+            <button onClick={handleStartWaitingRoom} className="flex-1 md:flex-none px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-50 transition-colors">
               <Users size={18} /> Open Waiting Room
             </button>
           )}
           {isWaitingRoom && (
-            <button onClick={handleStartQuiz} style={{ padding: '12px 24px', borderRadius: 8, border: 'none', background: '#22c55e', color: 'white', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button onClick={handleStartQuiz} className="flex-1 md:flex-none px-6 py-3 bg-green-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-green-600 transition-colors">
               <Play size={18} fill="white" /> Start Quiz Now
             </button>
           )}
           {isActive && (
             <>
-              <button onClick={handleNextQuestion} style={{ padding: '12px 24px', borderRadius: 8, border: 'none', background: '#6c47ff', color: 'white', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={handleNextQuestion} className="flex-1 md:flex-none px-6 py-3 bg-indigo-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-indigo-400 transition-colors">
                 {quiz.current_question_index < questions.length - 1 ? (
                   <><ArrowRight size={18} /> Next Question</>
                 ) : (
                   <><Flag size={18} /> Finish Quiz</>
                 )}
               </button>
-              <button onClick={handleEndQuiz} style={{ padding: '12px 24px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.2)', background: 'transparent', color: 'white', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <button onClick={handleEndQuiz} className="flex-1 md:flex-none px-6 py-3 bg-white/10 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-white/20 transition-colors">
                 End Early
               </button>
             </>
@@ -176,7 +173,7 @@ export default function TeacherHostQuizPage() {
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Col: Current Question */}
-        <div className="flex-2 w-full lg:w-2/3">
+        <div className="flex-1 w-full lg:w-2/3">
           <div className="card" style={{ padding: 24, height: '100%' }}>
             <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1e1b4b', marginBottom: 20 }}>Live Broadcast</h3>
             
