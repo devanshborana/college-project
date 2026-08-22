@@ -169,6 +169,65 @@ function QuizPageContent() {
 
   // WAITING ROOM PHASE
   if (isScheduled || isWaitingRoom) {
+    const myRecord = participants.find(p => p.student_id === user?.dbId)
+    const status = myRecord?.approval_status || 'joining'
+
+    if (status === 'blocked') {
+      return (
+        <div className="page-content" style={{ maxWidth: 800 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+            <ArrowLeft size={16} /> Leave Waiting Room
+          </button>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#fef2f2', border: '2px solid #fecaca' }}>
+            <XCircle size={48} color="#ef4444" style={{ margin: '0 auto 16px' }} />
+            <h1 style={{ fontSize: 32, fontWeight: 800, color: '#991b1b', marginBottom: 8 }}>Access Permanently Denied</h1>
+            <p style={{ fontSize: 16, color: '#b91c1c' }}>The teacher has blocked you from joining this quiz.</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (status === 'denied') {
+      return (
+        <div className="page-content" style={{ maxWidth: 800 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+            <ArrowLeft size={16} /> Leave Waiting Room
+          </button>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#fffbeb', border: '2px solid #fde68a' }}>
+            <XCircle size={48} color="#f59e0b" style={{ margin: '0 auto 16px' }} />
+            <h1 style={{ fontSize: 32, fontWeight: 800, color: '#92400e', marginBottom: 8 }}>Access Denied</h1>
+            <p style={{ fontSize: 16, color: '#b45309', marginBottom: 24 }}>The teacher did not allow you to join. You have 1 attempt left.</p>
+            <button onClick={async () => {
+              await supabase.from('live_quiz_participants').update({ approval_status: 'pending' }).eq('id', myRecord.id)
+            }} style={{ padding: '12px 24px', background: '#d97706', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>
+              Request Access Again
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    if (status === 'pending' || status === 'joining') {
+      return (
+        <div className="page-content" style={{ maxWidth: 800 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+            <ArrowLeft size={16} /> Leave Waiting Room
+          </button>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: 'linear-gradient(135deg, #1e1b4b, #312e81)', color: 'white' }}>
+            <Hourglass size={48} color="#a5b4fc" style={{ margin: '0 auto 16px', animation: 'pulse 2s infinite' }} />
+            <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>{quiz.title}</h1>
+            <p style={{ fontSize: 16, color: '#c7d2fe' }}>
+              Waiting for teacher approval...
+            </p>
+          </div>
+          <style>{`@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }`}</style>
+        </div>
+      )
+    }
+
+    // Allowed State
+    const allowedParticipants = participants.filter(p => p.approval_status === 'allowed')
+
     return (
       <div className="page-content" style={{ maxWidth: 800 }}>
         <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
@@ -184,10 +243,10 @@ function QuizPageContent() {
 
           <div style={{ padding: 20, background: 'rgba(255,255,255,0.1)', borderRadius: 12 }}>
             <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: '#a5b4fc', marginBottom: 16 }}>
-              {participants.length} Students Joined
+              {allowedParticipants.length} Students Joined
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center' }}>
-              {participants.map(p => (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {allowedParticipants.map(p => (
                 <div key={p.id} style={{ padding: '6px 12px', background: p.student_id === user?.dbId ? '#22c55e' : 'rgba(255,255,255,0.15)', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
                   {p.student_id === user?.dbId ? 'You' : p.profiles?.full_name || 'Student'}
                 </div>
@@ -208,7 +267,7 @@ function QuizPageContent() {
     const hasAnswered = selected !== undefined
 
     return (
-      <div className="page-content" style={{ maxWidth: 780 }}>
+      <div className="page-content max-w-3xl mx-auto">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <div style={{ fontWeight: 700, color: '#1e1b4b', fontSize: 18 }}>{quiz.title}</div>
           <div style={{ padding: '6px 16px', background: '#f5f3ff', color: '#6c47ff', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>
@@ -256,13 +315,42 @@ function QuizPageContent() {
             Waiting for teacher to show the next question...
           </div>
         )}
+        </div>
+
+        {/* Right Col: Leaderboard */}
+        <div className="flex-1 w-full lg:w-1/3">
+          <div className="card" style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Trophy size={18} color="#f59e0b" /> Live Leaderboard
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto' }}>
+              {[...participants.filter(p => p.approval_status === 'allowed')].sort((a,b) => b.score - a.score).map((student, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', padding: '10px 12px', background: student.student_id === user?.dbId ? '#f0fdf4' : '#f9fafb',
+                  border: `1px solid ${student.student_id === user?.dbId ? '#bbf7d0' : '#f3f4f6'}`, borderRadius: 8, gap: 10
+                }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: student.student_id === user?.dbId ? '#22c55e' : '#e0e7ff', color: student.student_id === user?.dbId ? 'white' : '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 11, flexShrink: 0 }}>
+                    {i + 1}
+                  </div>
+                  <div style={{ flex: 1, fontWeight: student.student_id === user?.dbId ? 700 : 500, color: '#1e1b4b', fontSize: 14 }}>
+                    {student.profiles?.full_name || 'Student'} {student.student_id === user?.dbId && <span style={{ fontSize: 10, color: '#059669', background: '#d1fae5', padding: '2px 6px', borderRadius: 20, marginLeft: 6 }}>You</span>}
+                  </div>
+                  <div style={{ fontWeight: 800, color: '#1e1b4b', fontSize: 14 }}>
+                    {student.score} <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 500 }}>pts</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
       </div>
     )
   }
 
   // RESULT PHASE (Completed)
   if (isCompleted) {
-    const sortedParts = [...participants].sort((a,b) => b.score - a.score)
+    const sortedParts = [...participants.filter(p => p.approval_status === 'allowed')].sort((a,b) => b.score - a.score)
     const myRank = sortedParts.findIndex(p => p.student_id === user?.dbId) + 1
 
     return (
@@ -271,7 +359,7 @@ function QuizPageContent() {
           <div style={{ fontSize: 64, marginBottom: 12 }}>🏆</div>
           <h2 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8 }}>Quiz Completed!</h2>
           <div style={{ fontSize: 56, fontWeight: 900, margin: '16px 0' }}>{myScore} <span style={{ fontSize: 24, fontWeight: 700, opacity: 0.8 }}>pts</span></div>
-          <div style={{ fontSize: 16, opacity: 0.9 }}>You placed <strong>#{myRank}</strong> out of {participants.length} students</div>
+          <div style={{ fontSize: 16, opacity: 0.9 }}>You placed <strong>#{myRank}</strong> out of {sortedParts.length} students</div>
         </div>
 
         <div className="card" style={{ padding: 24, marginBottom: 20 }}>

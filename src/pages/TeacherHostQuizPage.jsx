@@ -106,6 +106,20 @@ export default function TeacherHostQuizPage() {
   }
   const handleEndQuiz = () => updateQuizState('Completed', quiz.current_question_index)
 
+  const handleApprove = async (participantId) => {
+    const { error } = await supabase.from('live_quiz_participants').update({ approval_status: 'allowed' }).eq('id', participantId)
+    if (error) alert('Failed to approve: ' + error.message)
+  }
+
+  const handleDeny = async (participant) => {
+    const newCount = (participant.denial_count || 0) + 1
+    const newStatus = newCount >= 2 ? 'blocked' : 'denied'
+    const { error } = await supabase.from('live_quiz_participants')
+      .update({ approval_status: newStatus, denial_count: newCount })
+      .eq('id', participant.id)
+    if (error) alert('Failed to deny: ' + error.message)
+  }
+
   if (loading) return <div className="page-content" style={{ textAlign: 'center', padding: 60 }}>Loading Host Dashboard...</div>
   if (!quiz) return <div className="page-content">Quiz not found.</div>
 
@@ -160,9 +174,9 @@ export default function TeacherHostQuizPage() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 24 }}>
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Left Col: Current Question */}
-        <div style={{ flex: 2 }}>
+        <div className="flex-2 w-full lg:w-2/3">
           <div className="card" style={{ padding: 24, height: '100%' }}>
             <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1e1b4b', marginBottom: 20 }}>Live Broadcast</h3>
             
@@ -206,19 +220,52 @@ export default function TeacherHostQuizPage() {
           </div>
         </div>
 
-        {/* Right Col: Participants */}
-        <div style={{ flex: 1 }}>
-          <div className="card" style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {/* Right Col: Leaderboard & Controls */}
+        <div className="flex-1 w-full lg:w-1/3 flex flex-col gap-6">
+          
+          {/* Pending Requests */}
+          {(isScheduled || isWaitingRoom) && participants.some(p => p.approval_status === 'pending') && (
+            <div className="card" style={{ padding: 24 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+                <span>Pending Requests</span>
+                <span style={{ background: '#fef3c7', color: '#d97706', padding: '2px 10px', borderRadius: 20, fontSize: 12 }}>
+                  {participants.filter(p => p.approval_status === 'pending').length}
+                </span>
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 300, overflowY: 'auto' }}>
+                {participants.filter(p => p.approval_status === 'pending').map(p => (
+                  <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#fffbeb', borderRadius: 8, border: '1px solid #fde68a' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: '#92400e' }}>{p.profiles?.full_name || 'Student'}</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => handleApprove(p.id)} style={{ background: '#10b981', color: 'white', border: 'none', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <CheckCircle size={16} />
+                      </button>
+                      <button onClick={() => handleDeny(p)} style={{ background: '#ef4444', color: 'white', border: 'none', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <XCircle size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Allowed Participants */}
+          <div className="card" style={{ padding: 24, flex: 1, display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
               <span>Participants</span>
-              <span style={{ background: '#f5f3ff', color: '#6c47ff', padding: '2px 10px', borderRadius: 20, fontSize: 12 }}>{participants.length}</span>
+              <span style={{ background: '#f5f3ff', color: '#6c47ff', padding: '2px 10px', borderRadius: 20, fontSize: 12 }}>
+                {participants.filter(p => p.approval_status === 'allowed').length}
+              </span>
             </h3>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto', flex: 1 }}>
-              {participants.length === 0 ? (
-                <div style={{ color: '#9ca3af', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No students have joined yet.</div>
+              {participants.filter(p => p.approval_status === 'allowed').length === 0 ? (
+                <div style={{ color: '#9ca3af', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No allowed students yet.</div>
               ) : (
-                [...participants].sort((a,b) => b.score - a.score).map((p, i) => (
+                [...participants.filter(p => p.approval_status === 'allowed')].sort((a,b) => b.score - a.score).map((p) => (
                   <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#f9fafb', borderRadius: 8, border: '1px solid #f3f4f6' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>

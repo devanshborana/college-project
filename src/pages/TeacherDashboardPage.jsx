@@ -47,6 +47,17 @@ export default function TeacherDashboardPage() {
     setLoadingQuizzes(false)
   }
 
+  const handleDeleteQuiz = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this quiz?')) return
+    
+    const { error } = await supabase.from('live_quizzes').delete().eq('id', id)
+    if (!error) {
+      setScheduledQuizzes(prev => prev.filter(q => q.id !== id))
+    } else {
+      alert('Failed to delete quiz: ' + error.message)
+    }
+  }
+
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
@@ -421,13 +432,20 @@ export default function TeacherDashboardPage() {
                         {new Date(sq.scheduled_for).toLocaleString()} • Status: <span style={{ color: sq.status === 'Completed' ? '#059669' : '#f59e0b', fontWeight: 600 }}>{sq.status}</span>
                       </div>
                     </div>
-                    {sq.status !== 'Completed' && (
-                      <button onClick={() => navigate(`/teacher/host/${sq.id}`)} style={{
-                        background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
-                      }}>
-                        <Play size={14} fill="white" /> Host
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button onClick={() => handleDeleteQuiz(sq.id)} style={{
+                        background: 'transparent', color: '#ef4444', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
+                      }} onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                        <Trash2 size={14} /> Delete
                       </button>
-                    )}
+                      {sq.status !== 'Completed' && (
+                        <button onClick={() => navigate(`/teacher/host/${sq.id}`)} style={{
+                          background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                        }}>
+                          <Play size={14} fill="white" /> Host
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

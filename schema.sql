@@ -65,6 +65,8 @@ DROP POLICY IF EXISTS "Anyone can insert live_quizzes" ON live_quizzes;
 CREATE POLICY "Anyone can insert live_quizzes" ON live_quizzes FOR INSERT WITH CHECK (true);
 DROP POLICY IF EXISTS "Anyone can update live_quizzes" ON live_quizzes;
 CREATE POLICY "Anyone can update live_quizzes" ON live_quizzes FOR UPDATE USING (true);
+DROP POLICY IF EXISTS "Anyone can delete live_quizzes" ON live_quizzes;
+CREATE POLICY "Anyone can delete live_quizzes" ON live_quizzes FOR DELETE USING (true);
 
 -- Enable RLS for live_quiz_questions
 ALTER TABLE live_quiz_questions ENABLE ROW LEVEL SECURITY;
@@ -79,6 +81,8 @@ CREATE TABLE IF NOT EXISTS live_quiz_participants (
   quiz_id uuid REFERENCES live_quizzes(id) ON DELETE CASCADE,
   student_id uuid REFERENCES profiles(id) ON DELETE CASCADE,
   score integer DEFAULT 0,
+  approval_status text DEFAULT 'pending',
+  denial_count integer DEFAULT 0,
   joined_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   UNIQUE(quiz_id, student_id)
 );
