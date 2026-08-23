@@ -1,10 +1,42 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, Component } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { ArrowLeft, Play, ArrowRight, Flag, Users, CheckCircle, XCircle } from 'lucide-react'
+import { ArrowLeft, Play, ArrowRight, Flag, Users, CheckCircle, XCircle, Clock } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
+class HostErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+  static getDerivedStateFromError(error) { return { hasError: true, error }; }
+  componentDidCatch(error, errorInfo) { console.error("HostErrorBoundary caught an error", error, errorInfo); this.setState({ errorInfo }); }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: 40, background: '#fef2f2', color: '#dc2626', margin: 40, borderRadius: 12, border: '1px solid #fecaca' }}>
+          <h2>Something went wrong in the Host Dashboard.</h2>
+          <details style={{ whiteSpace: 'pre-wrap', marginTop: 20 }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo && this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function TeacherHostQuizPage() {
+  return (
+    <HostErrorBoundary>
+      <TeacherHostQuizPageContent />
+    </HostErrorBoundary>
+  )
+}
+
+function TeacherHostQuizPageContent() {
   const { quizId } = useParams()
   const navigate = useNavigate()
   const { user } = useApp()
