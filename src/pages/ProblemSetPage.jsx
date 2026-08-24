@@ -23,9 +23,9 @@ function DiffBadge({ diff }) {
 
 function StatusBadge({ status }) {
   const map = {
-    Solved: { cls: 'status-solved', icon: <CheckCircle size={11} /> },
-    'In Progress': { cls: 'status-progress', icon: <Clock size={11} /> },
-    'Not Attempted': { cls: 'status-not', icon: <Circle size={11} /> },
+    Solved: { cls: 'status-solved', icon: <CheckCircle size={13} /> },
+    'In Progress': { cls: 'status-progress', icon: <Clock size={13} /> },
+    'Not Attempted': { cls: 'status-not', icon: <Circle size={13} /> },
   }
   const { cls, icon } = map[status] || map['Not Attempted']
   return <span className={`status-badge ${cls}`}>{icon} {status}</span>
@@ -371,18 +371,22 @@ export default function ProblemSetPage() {
         }}>?</div>
       </div>
 
-      {/* Stats */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+      {/* Stats — single inline stat bar, not loud colored pills */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 16, background: '#FAFAFA', border: '1px solid #E7E5E4', borderRadius: 8, overflow: 'hidden', width: 'fit-content' }}>
         {[
-          { label: `${solved} Solved`, color: '#22c55e', bg: '#ecfdf5' },
-          { label: `${problems.filter(p => p.status === 'In Progress').length} In Progress`, color: '#3b82f6', bg: '#eff6ff' },
-          { label: `${problems.filter(p => p.status === 'Not Attempted').length} Not Attempted`, color: '#6b7280', bg: '#f9fafb' },
-          { label: `${problems.length} Total`, color: '#6c47ff', bg: '#f5f3ff' },
-        ].map(s => (
+          { label: 'Solved', value: solved },
+          { label: 'In Progress', value: problems.filter(p => p.status === 'In Progress').length },
+          { label: 'Not Attempted', value: problems.filter(p => p.status === 'Not Attempted').length },
+          { label: 'Total', value: problems.length },
+        ].map((s, i) => (
           <div key={s.label} style={{
-            padding: '6px 16px', borderRadius: 20, background: s.bg,
-            fontSize: 12, fontWeight: 600, color: s.color
-          }}>{s.label}</div>
+            padding: '7px 14px',
+            borderRight: i < 3 ? '1px solid #E7E5E4' : 'none',
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+          }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>{s.value}</span>
+            <span style={{ fontSize: 10, color: '#A3A3A3', marginTop: 1 }}>{s.label}</span>
+          </div>
         ))}
       </div>
 
@@ -420,12 +424,12 @@ export default function ProblemSetPage() {
                 }} className="problem-row fade-in-up" style={{ cursor: 'pointer' }}>
                   <div>
                     <div className="problem-name">{p.title}</div>
-                    <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>{p.course}</div>
+                    <div style={{ fontSize: 11, color: '#A3A3A3', marginTop: 2 }}>{p.course}</div>
                   </div>
                   <DiffBadge diff={p.difficulty} />
                   <StatusBadge status={p.status} />
                   <div style={{ textAlign: 'right' }}>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: '#6c47ff' }}>+{p.points} pts</span>
+                    <span style={{ fontSize: 11, fontWeight: 400, color: '#A3A3A3' }}>+{p.points}pt</span>
                   </div>
                 </div>
               ))

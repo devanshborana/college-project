@@ -40,7 +40,12 @@ function QuizPageContent() {
   const [questions, setQuestions] = useState([])
   const [loadingQuiz, setLoadingQuiz] = useState(true)
   const [participants, setParticipants] = useState([])
-  const [myAnswers, setMyAnswers] = useState({})
+  const [myAnswers, setMyAnswers] = useState(() => {
+    try {
+      const saved = localStorage.getItem(`quiz_answers_${subjectId}`)
+      return saved ? JSON.parse(saved) : {}
+    } catch { return {} }
+  })
   const [myScore, setMyScore] = useState(0)
 
   // Fetch and sync quiz state
@@ -86,6 +91,11 @@ function QuizPageContent() {
           .select(`*, profiles(full_name)`)
           .eq('quiz_id', quizDataDB.id)
         setParticipants(pData || [])
+        
+        const myRecord = pData?.find(p => p.student_id === user?.dbId)
+        if (myRecord) {
+          setMyScore(myRecord.score || 0)
+        }
 
         // 5. Subscribe to Quiz status updates
         quizChannel = supabase.channel(`student_quiz_${quizDataDB.id}`)
@@ -121,21 +131,36 @@ function QuizPageContent() {
 
   const handleAnswer = async (optIndex) => {
     if (!quiz || quiz.current_question_index === -1) return
-    if (myAnswers[quiz.current_question_index] !== undefined) return // already answered this question
+    const qIndex = quiz.current_question_index
+    const oldAnswer = myAnswers[qIndex]
+    
+    // If they clicked the exact same option again, do nothing
+    if (oldAnswer === optIndex) return
 
-    const newAnswers = { ...myAnswers, [quiz.current_question_index]: optIndex }
+    const newAnswers = { ...myAnswers, [qIndex]: optIndex }
     setMyAnswers(newAnswers)
+    localStorage.setItem(`quiz_answers_${quiz.id}`, JSON.stringify(newAnswers))
 
-    const q = questions[quiz.current_question_index]
+    const q = questions[qIndex]
+    let newScore = myScore
+
+    // If they previously had a correct answer, deduct the points
+    if (oldAnswer === q.correct_answer_index) {
+      newScore -= POINTS_PER_QUESTION
+    }
+
+    // If the new answer is correct, add the points
     if (optIndex === q.correct_answer_index) {
-      const newScore = myScore + POINTS_PER_QUESTION
-      setMyScore(newScore)
-      if (user?.dbId) {
-        await supabase.from('live_quiz_participants')
-          .update({ score: newScore })
-          .eq('quiz_id', quiz.id)
-          .eq('student_id', user.dbId)
-      }
+      newScore += POINTS_PER_QUESTION
+    }
+
+    setMyScore(newScore)
+    
+    if (user?.dbId && newScore !== myScore) {
+      await supabase.from('live_quiz_participants')
+        .update({ score: newScore })
+        .eq('quiz_id', quiz.id)
+        .eq('student_id', user.dbId)
     }
   }
 
@@ -267,86 +292,51 @@ function QuizPageContent() {
     const hasAnswered = selected !== undefined
 
     return (
-      <div className="page-content max-w-5xl mx-auto flex flex-col lg:flex-row gap-6">
+      <div className="page-content max-w-3xl mx-auto flex flex-col gap-6">
         
-        {/* Left Col: Main Question Area */}
-        <div className="flex-2 w-full lg:w-2/3">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div style={{ fontWeight: 700, color: '#1e1b4b', fontSize: 18 }}>{quiz.title}</div>
-          <div style={{ padding: '6px 16px', background: '#f5f3ff', color: '#6c47ff', borderRadius: 20, fontWeight: 700, fontSize: 14 }}>
-            Question {qIndex + 1} of {questions.length}
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <div style={{ height: 6, background: '#f0ecff', borderRadius: 3, marginBottom: 24, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((qIndex + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg, #6c47ff, #a855f7)', borderRadius: 3, transition: 'width 0.4s ease' }} />
-        </div>
-
-        <div className="card" style={{ padding: 32, marginBottom: 20 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#6c47ff', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 }}>Question {qIndex + 1}</div>
-          <div style={{ fontSize: 20, fontWeight: 600, color: '#1e1b4b', lineHeight: 1.6, marginBottom: 32 }}>
-            {q?.question_text}
+        {/* Main Question Area */}
+        <div className="w-full">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div style={{ fontWeight: 600, color: '#1A1A1A', fontSize: 15 }}>{quiz.title}</div>
+            <div style={{ padding: '4px 12px', background: '#F5F5F4', color: '#525252', borderRadius: 6, fontWeight: 500, fontSize: 12, border: '1px solid #E7E5E4' }}>
+              {qIndex + 1} / {questions.length}
+            </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {q?.options.map((opt, i) => {
-              const isSelected = selected === i
-              return (
-                <button key={i} onClick={() => handleAnswer(i)} disabled={hasAnswered}
-                  style={{
-                    padding: '16px 20px', borderRadius: 12, border: `2px solid ${isSelected ? '#6c47ff' : '#e8e4ff'}`,
-                    background: isSelected ? '#f5f3ff' : 'white', cursor: hasAnswered ? 'default' : 'pointer', textAlign: 'left',
-                    fontSize: 15, fontWeight: isSelected ? 600 : 500, color: isSelected ? '#6c47ff' : '#374151',
-                    transition: 'all 0.18s', display: 'flex', alignItems: 'center', gap: 14, opacity: hasAnswered && !isSelected ? 0.6 : 1
-                  }}>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                    background: isSelected ? '#6c47ff' : '#f5f3ff', color: isSelected ? 'white' : '#6b7280',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>
-                    {String.fromCharCode(65 + i)}
-                  </div>
-                  {opt}
-                </button>
-              )
-            })}
+          {/* Progress bar — monochrome */}
+          <div style={{ height: 3, background: '#E7E5E4', borderRadius: 99, marginBottom: 20, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${((qIndex + 1) / questions.length) * 100}%`, background: '#1A1A1A', borderRadius: 99, transition: 'width 0.4s ease' }} />
           </div>
-        </div>
 
-        {hasAnswered && (
-          <div style={{ textAlign: 'center', padding: 20, background: '#f8fafc', borderRadius: 12, color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
-            Waiting for teacher to show the next question...
-          </div>
-        )}
-        </div>
+          <div className="card" style={{ padding: 28, marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 12 }}>Question {qIndex + 1}</div>
+            <div style={{ fontSize: 17, fontWeight: 500, color: '#1A1A1A', lineHeight: 1.6, marginBottom: 24 }}>
+              {q?.question_text}
+            </div>
 
-        {/* Right Col: Leaderboard */}
-        <div className="flex-1 w-full lg:w-1/3">
-          <div className="card" style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Trophy size={18} color="#f59e0b" /> Live Leaderboard
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, overflowY: 'auto' }}>
-              {[...participants.filter(p => p.approval_status === 'allowed')].sort((a,b) => b.score - a.score).map((student, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', padding: '10px 12px', background: student.student_id === user?.dbId ? '#f0fdf4' : '#f9fafb',
-                  border: `1px solid ${student.student_id === user?.dbId ? '#bbf7d0' : '#f3f4f6'}`, borderRadius: 8, gap: 10
-                }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: student.student_id === user?.dbId ? '#22c55e' : '#e0e7ff', color: student.student_id === user?.dbId ? 'white' : '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: 11, flexShrink: 0 }}>
-                    {i + 1}
-                  </div>
-                  <div style={{ flex: 1, fontWeight: student.student_id === user?.dbId ? 700 : 500, color: '#1e1b4b', fontSize: 14 }}>
-                    {student.profiles?.full_name || 'Student'} {student.student_id === user?.dbId && <span style={{ fontSize: 10, color: '#059669', background: '#d1fae5', padding: '2px 6px', borderRadius: 20, marginLeft: 6 }}>You</span>}
-                  </div>
-                  <div style={{ fontWeight: 800, color: '#1e1b4b', fontSize: 14 }}>
-                    {student.score} <span style={{ fontSize: 11, color: '#6b7280', fontWeight: 500 }}>pts</span>
-                  </div>
-                </div>
-              ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {q?.options.map((opt, i) => {
+                const isSelected = selected === i
+                return (
+                  <button key={i} onClick={() => handleAnswer(i)}
+                    style={{
+                      padding: '14px 18px', borderRadius: 8, border: `2px solid ${isSelected ? '#1A1A1A' : '#E7E5E4'}`,
+                      background: isSelected ? '#1A1A1A' : '#FAFAFA', cursor: 'pointer', textAlign: 'left',
+                      fontSize: 14, fontWeight: isSelected ? 500 : 400, color: isSelected ? 'white' : '#525252',
+                      transition: 'all 150ms', display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'inherit'
+                    }}>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                      background: isSelected ? 'rgba(255,255,255,0.15)' : '#E7E5E4', color: isSelected ? 'white' : '#525252',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: 11 }}>
+                      {String.fromCharCode(65 + i)}
+                    </div>
+                    {opt}
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>
-
       </div>
     )
   }

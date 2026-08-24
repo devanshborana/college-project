@@ -86,11 +86,11 @@ function Header() {
     <header className="header">
       <div className="header-left">
         <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
-          width: 40, height: 40, borderRadius: 10, objectFit: 'cover'
+          width: 28, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #E7E5E4'
         }} />
         <div>
-          <div className="college-name">Lachoo Memorial College</div>
-          <div className="college-tagline">of Science & Technology, Jodhpur</div>
+          <div className="college-name">LMCST</div>
+          <div className="college-tagline">Jodhpur</div>
         </div>
       </div>
 
@@ -100,29 +100,32 @@ function Header() {
       </div>
 
       <div className="header-right">
-        <button className="icon-btn"><Bell size={17} /></button>
-        <button className="icon-btn"><GraduationCap size={17} /></button>
-        <div className="avatar">{initials}</div>
+        <button className="icon-btn" title="Notifications"><Bell size={15} /></button>
         <div style={{ position: 'relative' }} ref={dropdownRef}>
           <div onClick={() => setShowDropdown(!showDropdown)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-            <div className="header-user-info">
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e1b4b' }}>{user.name}</div>
-              <div style={{ fontSize: 10, color: '#6b7280' }}>ID: {user.id}</div>
+            <div className="avatar" title={user.name}>{initials}</div>
+            <div className="header-user-info" style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: '#1A1A1A', lineHeight: 1.2 }}>{user.name.split(' ')[0]}</div>
+              <div style={{ fontSize: 10, color: '#A3A3A3', lineHeight: 1.2 }}>{user.id}</div>
             </div>
-            <ChevronDown size={14} color="#6b7280" />
+            <ChevronDown size={12} color="#A3A3A3" />
           </div>
           {showDropdown && (
             <div style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 8,
-              background: 'white', border: '1px solid #e5e7eb', borderRadius: 8,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)', minWidth: 150, zIndex: 50
+              position: 'absolute', top: '100%', right: 0, marginTop: 6,
+              background: '#fff', border: '1px solid #E7E5E4', borderRadius: 8,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.08)', minWidth: 140, zIndex: 50
             }}>
+              <div style={{ padding: '10px 14px', borderBottom: '1px solid #E7E5E4' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: '#1A1A1A' }}>{user.name}</div>
+                <div style={{ fontSize: 10, color: '#A3A3A3', marginTop: 1 }}>{user.id}</div>
+              </div>
               <button onClick={logout} style={{
-                width: '100%', padding: '10px 16px', background: 'transparent',
-                border: 'none', textAlign: 'left', color: '#ef4444', fontSize: 13,
-                fontWeight: 600, cursor: 'pointer'
+                width: '100%', padding: '8px 14px', background: 'transparent',
+                border: 'none', textAlign: 'left', color: '#525252', fontSize: 12,
+                fontWeight: 400, cursor: 'pointer', fontFamily: 'inherit'
               }}>
-                Log out
+                Sign out
               </button>
             </div>
           )}

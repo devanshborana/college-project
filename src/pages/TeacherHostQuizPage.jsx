@@ -294,7 +294,9 @@ function TeacherHostQuizPageContent() {
               {participants.filter(p => p.approval_status === 'allowed').length === 0 ? (
                 <div style={{ color: '#9ca3af', fontSize: 13, textAlign: 'center', padding: '20px 0' }}>No allowed students yet.</div>
               ) : (
-                [...participants.filter(p => p.approval_status === 'allowed')].sort((a,b) => b.score - a.score).map((p) => (
+                [...participants.filter(p => p.approval_status === 'allowed')]
+                  .sort((a,b) => isCompleted ? b.score - a.score : (a.profiles?.full_name || '').localeCompare(b.profiles?.full_name || ''))
+                  .map((p) => (
                   <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px', background: '#f9fafb', borderRadius: 8, border: '1px solid #f3f4f6' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: '#e0e7ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>
@@ -302,7 +304,9 @@ function TeacherHostQuizPageContent() {
                       </div>
                       <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>{p.profiles?.full_name || 'Student'}</span>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: '#6c47ff' }}>{p.score} pts</span>
+                    {isCompleted && (
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#6c47ff' }}>{p.score} pts</span>
+                    )}
                   </div>
                 ))
               )}
