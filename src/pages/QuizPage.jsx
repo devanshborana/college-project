@@ -200,13 +200,13 @@ function QuizPageContent() {
     if (status === 'blocked') {
       return (
         <div className="page-content" style={{ maxWidth: 800 }}>
-          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#A3A3A3', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500, fontFamily: 'inherit', transition: 'color 150ms' }} onMouseEnter={e => e.currentTarget.style.color = '#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#A3A3A3'}>
             <ArrowLeft size={16} /> Leave Waiting Room
           </button>
-          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#fef2f2', border: '2px solid #fecaca' }}>
-            <XCircle size={48} color="#ef4444" style={{ margin: '0 auto 16px' }} />
-            <h1 style={{ fontSize: 32, fontWeight: 800, color: '#991b1b', marginBottom: 8 }}>Access Permanently Denied</h1>
-            <p style={{ fontSize: 16, color: '#b91c1c' }}>The teacher has blocked you from joining this quiz.</p>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#FAFAFA', border: '1px solid #E7E5E4' }}>
+            <XCircle size={48} color="#525252" style={{ margin: '0 auto 16px' }} />
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1A1A1A', marginBottom: 8 }}>Access Permanently Denied</h1>
+            <p style={{ fontSize: 14, color: '#525252' }}>The teacher has blocked you from joining this quiz.</p>
           </div>
         </div>
       )
@@ -215,16 +215,16 @@ function QuizPageContent() {
     if (status === 'denied') {
       return (
         <div className="page-content" style={{ maxWidth: 800 }}>
-          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#A3A3A3', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500, fontFamily: 'inherit', transition: 'color 150ms' }} onMouseEnter={e => e.currentTarget.style.color = '#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#A3A3A3'}>
             <ArrowLeft size={16} /> Leave Waiting Room
           </button>
-          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#fffbeb', border: '2px solid #fde68a' }}>
-            <XCircle size={48} color="#f59e0b" style={{ margin: '0 auto 16px' }} />
-            <h1 style={{ fontSize: 32, fontWeight: 800, color: '#92400e', marginBottom: 8 }}>Access Denied</h1>
-            <p style={{ fontSize: 16, color: '#b45309', marginBottom: 24 }}>The teacher did not allow you to join. You have 1 attempt left.</p>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#FAFAFA', border: '1px solid #E7E5E4' }}>
+            <XCircle size={48} color="#525252" style={{ margin: '0 auto 16px' }} />
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1A1A1A', marginBottom: 8 }}>Access Denied</h1>
+            <p style={{ fontSize: 14, color: '#525252', marginBottom: 24 }}>The teacher did not allow you to join. You have 1 attempt left.</p>
             <button onClick={async () => {
               await supabase.from('live_quiz_participants').update({ approval_status: 'pending' }).eq('id', myRecord.id)
-            }} style={{ padding: '12px 24px', background: '#d97706', color: 'white', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>
+            }} style={{ padding: '10px 20px', background: '#111111', color: 'white', border: 'none', borderRadius: 8, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit', transition: 'opacity 150ms' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
               Request Access Again
             </button>
           </div>
@@ -235,13 +235,13 @@ function QuizPageContent() {
     if (status === 'pending' || status === 'joining') {
       return (
         <div className="page-content" style={{ maxWidth: 800 }}>
-          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+          <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#A3A3A3', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500, fontFamily: 'inherit', transition: 'color 150ms' }} onMouseEnter={e => e.currentTarget.style.color = '#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#A3A3A3'}>
             <ArrowLeft size={16} /> Leave Waiting Room
           </button>
-          <div className="card" style={{ padding: 40, textAlign: 'center', background: 'linear-gradient(135deg, #1e1b4b, #312e81)', color: 'white' }}>
-            <Hourglass size={48} color="#a5b4fc" style={{ margin: '0 auto 16px', animation: 'pulse 2s infinite' }} />
-            <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>{quiz.title}</h1>
-            <p style={{ fontSize: 16, color: '#c7d2fe' }}>
+          <div className="card" style={{ padding: 40, textAlign: 'center', background: '#FAFAFA', border: '1px solid #E7E5E4' }}>
+            <Hourglass size={48} color="#A3A3A3" style={{ margin: '0 auto 16px', animation: 'pulse 2s infinite' }} />
+            <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1A1A1A', marginBottom: 8 }}>{quiz.title}</h1>
+            <p style={{ fontSize: 14, color: '#525252' }}>
               Waiting for teacher approval...
             </p>
           </div>
@@ -252,27 +252,26 @@ function QuizPageContent() {
 
     // Allowed State
     const allowedParticipants = participants.filter(p => p.approval_status === 'allowed')
-
     return (
       <div className="page-content" style={{ maxWidth: 800 }}>
-        <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#6b7280', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500 }}>
+        <button onClick={() => navigate('/live-quiz')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#A3A3A3', fontSize: 13, cursor: 'pointer', marginBottom: 20, fontWeight: 500, fontFamily: 'inherit', transition: 'color 150ms' }} onMouseEnter={e => e.currentTarget.style.color = '#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#A3A3A3'}>
           <ArrowLeft size={16} /> Leave Waiting Room
         </button>
 
-        <div className="card" style={{ padding: 40, textAlign: 'center', background: 'linear-gradient(135deg, #1e1b4b, #312e81)', color: 'white' }}>
-          <Hourglass size={48} color="#a5b4fc" style={{ margin: '0 auto 16px', animation: 'pulse 2s infinite' }} />
-          <h1 style={{ fontSize: 32, fontWeight: 800, marginBottom: 8 }}>{quiz.title}</h1>
-          <p style={{ fontSize: 16, color: '#c7d2fe', marginBottom: 32 }}>
+        <div className="card" style={{ padding: 40, textAlign: 'center', background: '#FFFFFF', border: '1px solid #E7E5E4' }}>
+          <Hourglass size={48} color="#A3A3A3" style={{ margin: '0 auto 16px', animation: 'pulse 2s infinite' }} />
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1A1A1A', marginBottom: 8 }}>{quiz.title}</h1>
+          <p style={{ fontSize: 14, color: '#525252', marginBottom: 32 }}>
             {isScheduled ? "The teacher has not opened the room yet." : "Waiting for the teacher to start the quiz..."}
           </p>
 
-          <div style={{ padding: 20, background: 'rgba(255,255,255,0.1)', borderRadius: 12 }}>
-            <div style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: '#a5b4fc', marginBottom: 16 }}>
+          <div style={{ padding: 20, background: '#FAFAFA', borderRadius: 8, border: '1px solid #E7E5E4' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.8, color: '#A3A3A3', marginBottom: 16 }}>
               {allowedParticipants.length} Students Joined
             </div>
             <div className="flex flex-wrap gap-2 justify-center">
               {allowedParticipants.map(p => (
-                <div key={p.id} style={{ padding: '6px 12px', background: p.student_id === user?.dbId ? '#22c55e' : 'rgba(255,255,255,0.15)', borderRadius: 20, fontSize: 13, fontWeight: 600 }}>
+                <div key={p.id} style={{ padding: '4px 10px', background: p.student_id === user?.dbId ? '#111111' : '#FFFFFF', border: '1px solid #E7E5E4', color: p.student_id === user?.dbId ? '#FFFFFF' : '#525252', borderRadius: 6, fontSize: 12, fontWeight: 500 }}>
                   {p.student_id === user?.dbId ? 'You' : p.profiles?.full_name || 'Student'}
                 </div>
               ))}
