@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Zap, Clock, Users, Play, Calendar } from 'lucide-react'
+import { Clock, Play, Calendar, BookOpen } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { quizData } from '../data/quizData'
 
@@ -38,104 +38,121 @@ export default function LiveQuizPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 860 }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1e1b4b', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Zap size={28} color="#f59e0b" /> Scheduled Live Quizzes
+      {/* Page heading — no lightning emoji */}
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: '#1A1A1A', letterSpacing: '-0.3px' }}>
+          Scheduled Live Quizzes
         </h1>
-        <p style={{ fontSize: 14, color: '#6b7280', marginTop: 6 }}>
-          Join live sessions scheduled by your teachers, race against the clock, and compete!
+        <p style={{ fontSize: 12, color: '#A3A3A3', marginTop: 3 }}>
+          Join live sessions scheduled by your teachers and compete on the leaderboard.
         </p>
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 40, color: '#6b7280' }}>Loading scheduled quizzes...</div>
+        <div style={{ textAlign: 'center', padding: 40, color: '#A3A3A3', fontSize: 13 }}>Loading quizzes...</div>
       ) : scheduledQuizzes.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: 60, background: 'white', borderRadius: 20, border: '2px dashed #e5e7eb' }}>
-          <Calendar size={48} color="#9ca3af" style={{ margin: '0 auto 16px', opacity: 0.5 }} />
-          <h3 style={{ fontSize: 18, fontWeight: 700, color: '#4b5563', marginBottom: 8 }}>No Live Quizzes Scheduled</h3>
-          <p style={{ fontSize: 14, color: '#6b7280' }}>Your teachers haven't scheduled any live quizzes yet. Check back later!</p>
+        /* Empty state — solid border, no dashed */
+        <div style={{ textAlign: 'center', padding: 60, background: '#FAFAFA', borderRadius: 10, border: '1px solid #E7E5E4' }}>
+          <Calendar size={32} color="#D4D4D4" style={{ margin: '0 auto 12px' }} />
+          <h3 style={{ fontSize: 15, fontWeight: 600, color: '#525252', marginBottom: 6 }}>No Live Quizzes Scheduled</h3>
+          <p style={{ fontSize: 13, color: '#A3A3A3' }}>Your teachers haven't scheduled any live quizzes yet.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
           {scheduledQuizzes.map((quiz) => {
-            const staticInfo = quizData[quiz.subject_id] || { icon: '📘', title: 'Subject' }
             const isLive = quiz.status === 'Active'
             const scheduledDate = new Date(quiz.scheduled_for)
 
             return (
-              <div key={quiz.id} style={{
-                background: 'white', borderRadius: 20, border: '2px solid #e8e4ff',
-                padding: 24, display: 'flex', flexDirection: 'column',
-                boxShadow: '0 10px 25px rgba(108,71,255,0.05)', transition: 'all 0.25s',
-                position: 'relative', overflow: 'hidden'
-              }}
+              <div
+                key={quiz.id}
+                style={{
+                  background: '#FFFFFF', borderRadius: 10, border: '1px solid #E7E5E4',
+                  padding: 20, display: 'flex', flexDirection: 'column',
+                  transition: 'border-color 150ms, box-shadow 150ms',
+                }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = '#c4b5fd'
-                  e.currentTarget.style.transform = 'translateY(-4px)'
-                  e.currentTarget.style.boxShadow = '0 15px 35px rgba(108,71,255,0.1)'
+                  e.currentTarget.style.borderColor = '#D4D4D4'
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#e8e4ff'
-                  e.currentTarget.style.transform = 'none'
-                  e.currentTarget.style.boxShadow = '0 10px 25px rgba(108,71,255,0.05)'
+                  e.currentTarget.style.borderColor = '#E7E5E4'
+                  e.currentTarget.style.boxShadow = 'none'
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 }}>
+                  {/* Neutral subject icon — gray square, not colored sticker */}
                   <div style={{
-                    width: 50, height: 50, borderRadius: 14, background: '#f5f3ff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24
+                    width: 40, height: 40, borderRadius: 8, background: '#F5F5F4',
+                    border: '1px solid #E7E5E4',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {staticInfo.icon}
+                    <BookOpen size={18} color="#A3A3A3" />
                   </div>
+
+                  {/* Status chip — monochrome, no lavender fill */}
                   {isLive ? (
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#ef4444', background: '#fef2f2', padding: '4px 10px', borderRadius: 20, display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', animation: 'pulse-red 2s infinite' }}></span> LIVE NOW
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, color: '#1A1A1A', background: '#111111',
+                      color: 'white', padding: '3px 8px', borderRadius: 4,
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      textTransform: 'uppercase', letterSpacing: 0.5
+                    }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'white', flexShrink: 0 }} />
+                      Live
                     </span>
                   ) : (
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#6c47ff', background: '#f5f3ff', padding: '4px 10px', borderRadius: 20 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 500, color: '#525252',
+                      border: '1px solid #E7E5E4', padding: '3px 8px', borderRadius: 4,
+                      textTransform: 'uppercase', letterSpacing: 0.4
+                    }}>
                       Scheduled
                     </span>
                   )}
                 </div>
 
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: '#1e1b4b', marginBottom: 6, lineHeight: 1.3 }}>
+                {/* Title */}
+                <h2 style={{ fontSize: 15, fontWeight: 600, color: '#1A1A1A', marginBottom: 4, lineHeight: 1.3 }}>
                   {quiz.title}
                 </h2>
-                
-                <div style={{ fontSize: 13, color: '#6c47ff', fontWeight: 600, marginBottom: 16 }}>
-                  By Prof. {quiz.profiles?.full_name || 'Teacher'}
+
+                {/* Byline — near-black medium weight, not purple */}
+                <div style={{ fontSize: 12, color: '#525252', fontWeight: 500, marginBottom: 14 }}>
+                  By {quiz.profiles?.full_name || 'Teacher'}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24, marginTop: 'auto', flexWrap: 'wrap' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7280', fontSize: 13 }}>
-                    <Calendar size={16} /> {scheduledDate.toLocaleDateString()} {scheduledDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {/* Metadata row — muted gray, matching app standard */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, marginTop: 'auto', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#A3A3A3', fontSize: 11 }}>
+                    <Calendar size={13} />
+                    {scheduledDate.toLocaleDateString()} {scheduledDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#6b7280', fontSize: 13 }}>
-                    <Clock size={16} /> 20s/Q
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#A3A3A3', fontSize: 11 }}>
+                    <Clock size={13} /> 20s/Q
                   </div>
                 </div>
 
-                <button onClick={() => navigate(`/quiz/${quiz.id}`)} style={{
-                  width: '100%', padding: '12px', borderRadius: 12, border: 'none',
-                  background: 'linear-gradient(135deg, #6c47ff, #a855f7)', color: 'white',
-                  fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex',
-                  alignItems: 'center', justifyContent: 'center', gap: 8,
-                  boxShadow: '0 4px 12px rgba(108,71,255,0.2)'
-                }}>
-                  <Play size={16} fill="white" /> Enter Session
+                {/* Enter Session — primary solid black, no purple gradient */}
+                <button
+                  onClick={() => navigate(`/quiz/${quiz.id}`)}
+                  style={{
+                    width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+                    background: '#111111', color: 'white',
+                    fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+                    fontFamily: 'inherit', transition: 'opacity 150ms',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
+                  <Play size={14} /> Enter Session
                 </button>
               </div>
             )
           })}
         </div>
       )}
-      <style>{`
-        @keyframes pulse-red {
-          0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
-          70% { box-shadow: 0 0 0 6px rgba(239,68,68,0); }
-          100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-        }
-      `}</style>
     </div>
   )
 }

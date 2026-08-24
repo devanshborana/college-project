@@ -302,57 +302,54 @@ export default function TeacherDashboardPage() {
 
   return (
     <div className="page-content" style={{ maxWidth: 860 }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1e1b4b', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Target size={28} color="#6c47ff" /> Teacher Portal
-        </h1>
-        <p style={{ fontSize: 14, color: '#6b7280', marginTop: 6 }}>
-          Manage your curriculum by scheduling live quizzes and adding coding problems.
-        </p>
+      <div style={{ marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 600, color: '#1A1A1A', letterSpacing: '-0.3px' }}>Teacher Portal</h1>
+        <p style={{ fontSize: 12, color: '#A3A3A3', marginTop: 3 }}>Manage curriculum by scheduling live quizzes and adding coding problems.</p>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 20, borderBottom: '2px solid #e8e4ff', marginBottom: 24 }}>
+      {/* Tabs — near-black underline, no purple */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #E7E5E4', marginBottom: 24 }}>
         <button onClick={() => setActiveTab('coding')} style={{
-          background: 'none', border: 'none', padding: '12px 16px', fontSize: 15, fontWeight: 700,
-          color: activeTab === 'coding' ? '#6c47ff' : '#9ca3af',
-          borderBottom: activeTab === 'coding' ? '3px solid #6c47ff' : '3px solid transparent',
-          cursor: 'pointer', marginBottom: -2, display: 'flex', alignItems: 'center', gap: 8
+          background: 'none', border: 'none', padding: '10px 16px', fontSize: 13, fontWeight: 500,
+          color: activeTab === 'coding' ? '#1A1A1A' : '#A3A3A3',
+          borderBottom: activeTab === 'coding' ? '2px solid #1A1A1A' : '2px solid transparent',
+          cursor: 'pointer', marginBottom: -1, display: 'flex', alignItems: 'center', gap: 7,
+          transition: 'color 150ms', fontFamily: 'inherit'
         }}>
-          <Code2 size={18} /> Question Bank Generator
+          <Code2 size={15} /> Question Bank Generator
         </button>
         <button onClick={() => setActiveTab('quiz')} style={{
-          background: 'none', border: 'none', padding: '12px 16px', fontSize: 15, fontWeight: 700,
-          color: activeTab === 'quiz' ? '#6c47ff' : '#9ca3af',
-          borderBottom: activeTab === 'quiz' ? '3px solid #6c47ff' : '3px solid transparent',
-          cursor: 'pointer', marginBottom: -2, display: 'flex', alignItems: 'center', gap: 8
+          background: 'none', border: 'none', padding: '10px 16px', fontSize: 13, fontWeight: 500,
+          color: activeTab === 'quiz' ? '#1A1A1A' : '#A3A3A3',
+          borderBottom: activeTab === 'quiz' ? '2px solid #1A1A1A' : '2px solid transparent',
+          cursor: 'pointer', marginBottom: -1, display: 'flex', alignItems: 'center', gap: 7,
+          transition: 'color 150ms', fontFamily: 'inherit'
         }}>
-          <Calendar size={18} /> Live Quiz Scheduler
+          <Calendar size={15} /> Live Quiz Scheduler
         </button>
       </div>
 
-      {/* Messages */}
-      {error && <div style={{ padding: 16, background: '#fef2f2', color: '#dc2626', borderRadius: 12, border: '1px solid #fecaca', marginBottom: 20 }}>{error}</div>}
-      {success && <div style={{ padding: 16, background: '#ecfdf5', color: '#059669', borderRadius: 12, border: '1px solid #a7f3d0', marginBottom: 20 }}>{success}</div>}
+      {/* Messages — no color, monochrome */}
+      {error && <div style={{ padding: 12, background: '#FAFAFA', color: '#1A1A1A', borderRadius: 8, border: '1px solid #E7E5E4', marginBottom: 16, fontSize: 13 }}>{error}</div>}
+      {success && <div style={{ padding: 12, background: '#FAFAFA', color: '#525252', borderRadius: 8, border: '1px solid #E7E5E4', marginBottom: 16, fontSize: 13 }}>{success}</div>}
 
       {/* ── CODING PROBLEM TAB ── */}
       {activeTab === 'coding' && (
         <div style={{ display: 'flex', gap: 24, flexDirection: 'column' }}>
           <div className="card" style={{ padding: 24 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16 }}>Generate Coding Problem</h3>
-            
-            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+            {/* Form fields — light gray borders, near-black focus */}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Subject</label>
-                <select value={subjectId} onChange={e => setSubjectId(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none' }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Subject</label>
+                <select value={subjectId} onChange={e => setSubjectId(e.target.value)} style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit', color: '#1A1A1A', background: '#FAFAFA' }}>
                   <option value="dsa">Data Structures (C)</option>
                   <option value="oop">Object Oriented (C++)</option>
                   <option value="web-tech">Web Technologies (HTML/JS)</option>
                 </select>
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Difficulty</label>
-                <select value={difficulty} onChange={e => setDifficulty(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none' }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Difficulty</label>
+                <select value={difficulty} onChange={e => setDifficulty(e.target.value)} style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit', color: '#1A1A1A', background: '#FAFAFA' }}>
                   <option value="Easy">Easy (10 pts)</option>
                   <option value="Medium">Medium (25 pts)</option>
                   <option value="Hard">Hard (50 pts)</option>
@@ -360,51 +357,56 @@ export default function TeacherDashboardPage() {
               </div>
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Problem Topic / Prompt</label>
-              <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Write a program to reverse a linked list..." style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none', fontSize: 15 }} />
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Problem Topic / Prompt</label>
+              <input type="text" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Write a program to reverse a linked list..." style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit', color: '#1A1A1A' }} />
             </div>
 
+            {/* Primary button — solid black, no green gradient */}
             <button onClick={handleGenerateCode} disabled={loadingCode || !topic.trim()} style={{
-              background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: (loadingCode || !topic.trim()) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, opacity: (loadingCode || !topic.trim()) ? 0.7 : 1
+              background: (loadingCode || !topic.trim()) ? '#D4D4D4' : '#111111', color: 'white', border: 'none', padding: '9px 18px',
+              borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: (loadingCode || !topic.trim()) ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: 7, fontFamily: 'inherit', transition: 'background 150ms'
             }}>
-              {loadingCode ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Sparkles size={16} />} 
-              {loadingCode ? 'Generating with AI...' : 'Generate Problem'}
+              {loadingCode ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Sparkles size={14} />}
+              {loadingCode ? 'Generating...' : 'Generate Problem'}
             </button>
           </div>
 
           {generatedProblem && (
-            <div className="card" style={{ padding: 24, border: '2px solid #6c47ff' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <div className="card" style={{ padding: 24, border: '1px solid #D4D4D4' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
                 <div>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: '#6c47ff', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 }}>AI Generated Preview</div>
-                  <h3 style={{ fontSize: 20, fontWeight: 800, color: '#1e1b4b' }}>{generatedProblem.title}</h3>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>AI Generated Preview</div>
+                  <h3 style={{ fontSize: 17, fontWeight: 600, color: '#1A1A1A' }}>{generatedProblem.title}</h3>
                 </div>
-                <span style={{ padding: '4px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700, background: '#f5f3ff', color: '#6c47ff' }}>
-                  {generatedProblem.difficulty} ({generatedProblem.points} pts)
+                <span style={{ padding: '3px 10px', borderRadius: 4, fontSize: 11, fontWeight: 500, background: '#F5F5F4', color: '#525252', border: '1px solid #E7E5E4' }}>
+                  {generatedProblem.difficulty} · {generatedProblem.points} pts
                 </span>
               </div>
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: '#4b5563', marginBottom: 4 }}>Objective</div>
-                <div style={{ fontSize: 14, color: '#374151', background: '#f9fafb', padding: 12, borderRadius: 8 }}>{generatedProblem.objective}</div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontWeight: 600, fontSize: 11, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>Objective</div>
+                <div style={{ fontSize: 13, color: '#525252', background: '#FAFAFA', padding: 10, borderRadius: 6, border: '1px solid #E7E5E4' }}>{generatedProblem.objective}</div>
               </div>
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: '#4b5563', marginBottom: 4 }}>Requirements</div>
-                <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14, color: '#374151', background: '#f9fafb', padding: 12, borderRadius: 8 }}>
-                  {generatedProblem.requirements.map((r, i) => <li key={i} style={{ marginLeft: 16 }}>{r}</li>)}
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontWeight: 600, fontSize: 11, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>Requirements</div>
+                <ul style={{ margin: 0, paddingLeft: 16, fontSize: 13, color: '#525252', background: '#FAFAFA', padding: '10px 10px 10px 28px', borderRadius: 6, border: '1px solid #E7E5E4' }}>
+                  {generatedProblem.requirements.map((r, i) => <li key={i}>{r}</li>)}
                 </ul>
               </div>
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontWeight: 700, fontSize: 13, color: '#4b5563', marginBottom: 4 }}>Starter Code</div>
-                <pre style={{ background: '#1e1e2e', color: '#cdd6f4', padding: 12, borderRadius: 8, fontSize: 13, overflowX: 'auto', margin: 0 }}>
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 600, fontSize: 11, color: '#A3A3A3', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 }}>Starter Code</div>
+                <pre style={{ background: '#161618', color: '#D4D4D4', padding: 12, borderRadius: 8, fontSize: 12, overflowX: 'auto', margin: 0, fontFamily: "'Fira Code', monospace" }}>
                   {generatedProblem.starter_code}
                 </pre>
               </div>
+              {/* Primary button — solid black */}
               <button onClick={handleSaveCode} disabled={savingCode} style={{
-                background: 'linear-gradient(135deg, #6c47ff, #a855f7)', color: 'white', border: 'none', padding: '12px 24px', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: savingCode ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center'
+                background: savingCode ? '#D4D4D4' : '#111111', color: 'white', border: 'none', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+                cursor: savingCode ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 7, width: '100%', justifyContent: 'center', fontFamily: 'inherit'
               }}>
-                {savingCode ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />} 
-                {savingCode ? 'Saving to Database...' : 'Approve & Publish to Question Bank'}
+                {savingCode ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+                {savingCode ? 'Saving...' : 'Approve & Publish to Question Bank'}
               </button>
             </div>
           )}
@@ -415,34 +417,40 @@ export default function TeacherDashboardPage() {
       {activeTab === 'quiz' && (
         <div style={{ display: 'flex', gap: 24, flexDirection: 'column' }}>
           
-          {/* List of Scheduled Quizzes */}
-          <div className="card" style={{ padding: 24, background: '#f5f3ff', border: '2px dashed #c4b5fd' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16 }}>My Scheduled Quizzes</h3>
+          {/* My Scheduled Quizzes — solid hairline border, no dashed lavender */}
+          <div className="card" style={{ padding: 20 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A', marginBottom: 14 }}>My Scheduled Quizzes</h3>
             {loadingQuizzes ? (
-              <div style={{ color: '#6b7280', fontSize: 14 }}>Loading...</div>
+              <div style={{ color: '#A3A3A3', fontSize: 13 }}>Loading...</div>
             ) : scheduledQuizzes.length === 0 ? (
-              <div style={{ color: '#6b7280', fontSize: 14 }}>You haven't scheduled any quizzes yet. Create one below!</div>
+              <div style={{ color: '#A3A3A3', fontSize: 13 }}>No quizzes scheduled yet. Create one below.</div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {scheduledQuizzes.map(sq => (
-                  <div key={sq.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '12px 16px', borderRadius: 12, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                  <div key={sq.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FAFAFA', padding: '10px 14px', borderRadius: 8, border: '1px solid #E7E5E4' }}>
                     <div>
-                      <div style={{ fontWeight: 700, color: '#1e1b4b', fontSize: 15 }}>{sq.title}</div>
-                      <div style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                        {new Date(sq.scheduled_for).toLocaleString()} • Status: <span style={{ color: sq.status === 'Completed' ? '#059669' : '#f59e0b', fontWeight: 600 }}>{sq.status}</span>
+                      <div style={{ fontWeight: 500, color: '#1A1A1A', fontSize: 13 }}>{sq.title}</div>
+                      <div style={{ fontSize: 11, color: '#A3A3A3', marginTop: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        {new Date(sq.scheduled_for).toLocaleString()}
+                        {/* Status via icon, not color */}
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 500, color: '#525252' }}>
+                          · {sq.status === 'Completed' ? '✓' : '◦'} {sq.status}
+                        </span>
                       </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {/* Delete — secondary/outlined, no red */}
                       <button onClick={() => handleDeleteQuiz(sq.id)} style={{
-                        background: 'transparent', color: '#ef4444', border: '1px solid #fca5a5', padding: '8px 12px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
-                      }} onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                        <Trash2 size={14} /> Delete
+                        background: 'transparent', color: '#525252', border: '1px solid #E7E5E4', padding: '6px 10px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'inherit', transition: 'background 150ms'
+                      }} onMouseEnter={e => { e.currentTarget.style.background = '#F5F5F4'; e.currentTarget.style.borderColor = '#D4D4D4' }} onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#E7E5E4' }}>
+                        <Trash2 size={13} /> Delete
                       </button>
                       {sq.status !== 'Completed' && (
+                        /* Host — primary, solid black */
                         <button onClick={() => navigate(`/teacher/host/${sq.id}`)} style={{
-                          background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
+                          background: '#111111', color: 'white', border: 'none', padding: '6px 12px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'inherit'
                         }}>
-                          <Play size={14} fill="white" /> Host
+                          <Play size={12} /> Host
                         </button>
                       )}
                     </div>
@@ -453,17 +461,18 @@ export default function TeacherDashboardPage() {
           </div>
 
           {/* Quiz Details Form */}
-          <div className="card" style={{ padding: 24 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b', marginBottom: 16 }}>Quiz Details</h3>
-            
-            <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          <div className="card" style={{ padding: 20 }}>
+            <h3 style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A', marginBottom: 14 }}>Quiz Details</h3>
+
+            {/* Quiz form — gray borders, no purple */}
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
               <div style={{ flex: 2 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Quiz Title</label>
-                <input type="text" value={quizTitle} onChange={e => setQuizTitle(e.target.value)} placeholder="e.g. Midterm Prep Quiz" style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none', fontSize: 14 }} />
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Quiz Title</label>
+                <input type="text" value={quizTitle} onChange={e => setQuizTitle(e.target.value)} placeholder="e.g. Midterm Prep Quiz" style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Subject</label>
-                <select value={quizSubject} onChange={e => setQuizSubject(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none' }}>
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Subject</label>
+                <select value={quizSubject} onChange={e => setQuizSubject(e.target.value)} style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontFamily: 'inherit', fontSize: 13, background: '#FAFAFA' }}>
                   <option value="dsa">Data Structures</option>
                   <option value="oop">Object Oriented</option>
                   <option value="discrete-math">Discrete Math</option>
@@ -472,14 +481,14 @@ export default function TeacherDashboardPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Date</label>
-                <input type="date" value={quizDate} onChange={e => setQuizDate(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none', fontSize: 14 }} />
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Date</label>
+                <input type="date" value={quizDate} onChange={e => setQuizDate(e.target.value)} style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Time</label>
-                <input type="time" value={quizTime} onChange={e => setQuizTime(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: 12, border: '1px solid #e5e7eb', outline: 'none', fontSize: 14 }} />
+                <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#A3A3A3', marginBottom: 5, textTransform: 'uppercase', letterSpacing: 0.6 }}>Time</label>
+                <input type="time" value={quizTime} onChange={e => setQuizTime(e.target.value)} style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #E7E5E4', outline: 'none', fontSize: 13, fontFamily: 'inherit' }} />
               </div>
             </div>
           </div>
@@ -487,40 +496,43 @@ export default function TeacherDashboardPage() {
           {/* Manual Questions Editor */}
           <div className="card" style={{ padding: 24 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1e1b4b' }}>Questions ({quizQuestions.length})</h3>
+              <h3 style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A' }}>Questions ({quizQuestions.length})</h3>
+              {/* Add Question — secondary outlined, no green */}
               <button onClick={handleAddManualQuestion} style={{
-                background: '#ecfdf5', color: '#059669', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6
-              }}>
-                <Plus size={14} /> Add Question
+                background: 'transparent', color: '#525252', border: '1px solid #E7E5E4', padding: '6px 12px', borderRadius: 7, fontSize: 12, fontWeight: 500, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'inherit', transition: 'background 150ms'
+              }} onMouseEnter={e => e.currentTarget.style.background = '#F5F5F4'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                <Plus size={13} /> Add Question
               </button>
             </div>
 
             {quizQuestions.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#9ca3af', border: '2px dashed #e5e7eb', borderRadius: 12 }}>
+              <div style={{ textAlign: 'center', padding: '32px 20px', color: '#A3A3A3', border: '1px solid #E7E5E4', borderRadius: 8, fontSize: 12 }}>
                 No questions yet. Click "Add Question" to begin.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 {quizQuestions.map((q, qIndex) => (
-                  <div key={qIndex} style={{ padding: 20, border: '1px solid #e5e7eb', borderRadius: 12, background: '#f9fafb', position: 'relative' }}>
+                  <div key={qIndex} style={{ padding: 16, border: '1px solid #E7E5E4', borderRadius: 8, background: '#FAFAFA', position: 'relative' }}>
+                    {/* Remove — plain icon button, no red */}
                     <button onClick={() => handleRemoveQuestion(qIndex)} style={{
-                      position: 'absolute', top: 16, right: 16, background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: 4
-                    }}>
-                      <Trash2 size={16} />
+                      position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', color: '#A3A3A3', cursor: 'pointer', padding: 4, transition: 'color 150ms'
+                    }} onMouseEnter={e => e.currentTarget.style.color = '#1A1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#A3A3A3'}>
+                      <Trash2 size={15} />
                     </button>
                     
                     <div style={{ marginBottom: 16, paddingRight: 32 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <label style={{ fontSize: 13, fontWeight: 700, color: '#1e1b4b' }}>Question {qIndex + 1}</label>
+                        <label style={{ fontSize: 12, fontWeight: 600, color: '#525252' }}>Question {qIndex + 1}</label>
+                        {/* AI Options — outlined secondary */}
                         <button 
                           onClick={() => handleGenerateOptions(qIndex, q.q)}
                           disabled={generatingOptionsIdx === qIndex || !q.q.trim()}
                           style={{
-                            background: '#f5f3ff', color: '#6c47ff', border: '1px solid #e8e4ff', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: (generatingOptionsIdx === qIndex || !q.q.trim()) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, opacity: (generatingOptionsIdx === qIndex || !q.q.trim()) ? 0.6 : 1
+                            background: 'transparent', color: '#525252', border: '1px solid #E7E5E4', padding: '3px 9px', borderRadius: 6, fontSize: 11, fontWeight: 500, cursor: (generatingOptionsIdx === qIndex || !q.q.trim()) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4, opacity: (generatingOptionsIdx === qIndex || !q.q.trim()) ? 0.5 : 1, fontFamily: 'inherit'
                           }}
                         >
-                          {generatingOptionsIdx === qIndex ? <Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Sparkles size={12} />}
-                          {generatingOptionsIdx === qIndex ? 'Generating...' : 'AI Generate Options'}
+                          {generatingOptionsIdx === qIndex ? <Loader2 size={11} style={{ animation: 'spin 1s linear infinite' }} /> : <Sparkles size={11} />}
+                          {generatingOptionsIdx === qIndex ? 'Generating...' : 'AI Options'}
                         </button>
                       </div>
                       <textarea value={q.q} onChange={e => handleUpdateQuestion(qIndex, 'q', e.target.value)} placeholder="Type the question here..." style={{
@@ -530,10 +542,10 @@ export default function TeacherDashboardPage() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                       {q.opts.map((opt, optIndex) => (
-                        <div key={optIndex} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div key={optIndex} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
                           <input type="radio" name={`ans-${qIndex}`} checked={q.ans === optIndex} onChange={() => handleUpdateQuestion(qIndex, 'ans', optIndex)} style={{ cursor: 'pointer' }} />
                           <input type="text" value={opt} onChange={e => handleUpdateQuestion(qIndex, 'opts', e.target.value, optIndex)} placeholder={`Option ${optIndex + 1}`} style={{
-                            flex: 1, padding: '8px 12px', borderRadius: 6, border: q.ans === optIndex ? '2px solid #10b981' : '1px solid #d1d5db', outline: 'none', fontSize: 13, background: 'white'
+                            flex: 1, padding: '7px 10px', borderRadius: 6, border: q.ans === optIndex ? '2px solid #1A1A1A' : '1px solid #E7E5E4', outline: 'none', fontSize: 12, background: 'white', fontFamily: 'inherit'
                           }} />
                         </div>
                       ))}
@@ -544,10 +556,14 @@ export default function TeacherDashboardPage() {
             )}
           </div>
 
+          {/* Schedule Quiz — primary solid black */}
           <button onClick={handleScheduleQuiz} disabled={savingQuiz || quizQuestions.length === 0} style={{
-            background: 'linear-gradient(135deg, #6c47ff, #a855f7)', color: 'white', border: 'none', padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 800, cursor: (savingQuiz || quizQuestions.length === 0) ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 8, width: '100%', justifyContent: 'center', opacity: (savingQuiz || quizQuestions.length === 0) ? 0.7 : 1
+            background: (savingQuiz || quizQuestions.length === 0) ? '#D4D4D4' : '#111111',
+            color: 'white', border: 'none', padding: '12px 20px', borderRadius: 8, fontSize: 14, fontWeight: 500,
+            cursor: (savingQuiz || quizQuestions.length === 0) ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center', gap: 7, width: '100%', justifyContent: 'center', fontFamily: 'inherit'
           }}>
-            {savingQuiz ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <Calendar size={18} />} 
+            {savingQuiz ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Calendar size={16} />}
             {savingQuiz ? 'Scheduling...' : `Schedule Live Quiz (${quizQuestions.length} Questions)`}
           </button>
         </div>

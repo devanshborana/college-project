@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, Component } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, RotateCcw, BookOpen, Loader, Users, Play, Hourglass } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, Award, RotateCcw, BookOpen, Loader, Users, Play, Hourglass } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../context/AppContext'
 import { quizData as staticQuizData } from '../data/quizData'
@@ -348,37 +348,41 @@ function QuizPageContent() {
 
     return (
       <div className="page-content" style={{ maxWidth: 780 }}>
-        <div style={{ background: 'linear-gradient(135deg, #6c47ff 0%, #a855f7 100%)', borderRadius: 20, padding: 40, color: 'white', textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontSize: 64, marginBottom: 12 }}>🏆</div>
-          <h2 style={{ fontSize: 32, fontWeight: 900, marginBottom: 8 }}>Quiz Completed!</h2>
-          <div style={{ fontSize: 56, fontWeight: 900, margin: '16px 0' }}>{myScore} <span style={{ fontSize: 24, fontWeight: 700, opacity: 0.8 }}>pts</span></div>
-          <div style={{ fontSize: 16, opacity: 0.9 }}>You placed <strong>#{myRank}</strong> out of {sortedParts.length} students</div>
+        {/* Flat near-black hero — identical to LeaderboardPage hero */}
+        <div className="leaderboard-header" style={{ textAlign: 'center', padding: '32px 28px' }}>
+          <Award size={28} color="rgba(255,255,255,0.5)" style={{ margin: '0 auto 12px' }} />
+          <h2 style={{ fontSize: 24, fontWeight: 600, color: 'white', marginBottom: 6, letterSpacing: '-0.3px' }}>Quiz Completed</h2>
+          <div style={{ fontSize: 52, fontWeight: 700, color: 'white', margin: '12px 0 4px', letterSpacing: '-2px' }}>
+            {myScore} <span style={{ fontSize: 20, fontWeight: 400, color: 'rgba(255,255,255,0.4)' }}>pts</span>
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', marginTop: 4 }}>
+            You placed <span style={{ color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>#{myRank}</span> out of {sortedParts.length} students
+          </div>
         </div>
 
-        <div className="card" style={{ padding: 24, marginBottom: 20 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1e1b4b', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Trophy size={20} color="#f59e0b" /> Final Leaderboard
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="card" style={{ padding: 20, marginBottom: 16 }}>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: '#1A1A1A', marginBottom: 14 }}>Final Leaderboard</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {sortedParts.map((student, i) => (
               <div key={i} style={{
-                display: 'flex', alignItems: 'center', padding: '14px 16px',
-                background: student.student_id === user?.dbId ? '#f0fdf4' : '#f9fafb',
-                border: `1.5px solid ${student.student_id === user?.dbId ? '#bbf7d0' : '#f3f4f6'}`,
-                borderRadius: 12, gap: 14
+                display: 'flex', alignItems: 'center', padding: '10px 14px',
+                background: student.student_id === user?.dbId ? '#F5F5F4' : '#FAFAFA',
+                border: `1px solid ${student.student_id === user?.dbId ? '#D4D4D4' : '#E7E5E4'}`,
+                borderLeft: student.student_id === user?.dbId ? '2px solid #111111' : '1px solid #E7E5E4',
+                borderRadius: 8, gap: 12
               }}>
-                <div style={{
-                  width: 32, height: 32, borderRadius: '50%', background: student.student_id === user?.dbId ? '#22c55e' : '#e0e7ff',
-                  color: student.student_id === user?.dbId ? 'white' : '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 800, fontSize: 14, flexShrink: 0
-                }}>
-                  {i + 1}
+                {/* Rank badge — same component as main leaderboard */}
+                <div className={`rank-badge ${i === 0 ? 'rank-gold' : i === 1 ? 'rank-silver' : i === 2 ? 'rank-bronze' : 'rank-default'}`}>
+                  #{i + 1}
                 </div>
-                <div style={{ flex: 1, fontWeight: student.student_id === user?.dbId ? 700 : 500, color: '#1e1b4b', fontSize: 16 }}>
-                  {student.profiles?.full_name || 'Student'} {student.student_id === user?.dbId && <span style={{ fontSize: 11, color: '#059669', background: '#d1fae5', padding: '3px 8px', borderRadius: 20, marginLeft: 8 }}>You</span>}
+                <div style={{ flex: 1, fontWeight: student.student_id === user?.dbId ? 600 : 400, color: '#1A1A1A', fontSize: 13 }}>
+                  {student.profiles?.full_name || 'Student'}
+                  {student.student_id === user?.dbId && (
+                    <span style={{ fontSize: 9, background: '#F5F5F4', color: '#525252', padding: '1px 5px', borderRadius: 3, marginLeft: 7, fontWeight: 500, border: '1px solid #E7E5E4', textTransform: 'uppercase', letterSpacing: 0.3 }}>You</span>
+                  )}
                 </div>
-                <div style={{ fontWeight: 800, color: '#1e1b4b', fontSize: 18 }}>
-                  {student.score} <span style={{ fontSize: 13, color: '#6b7280', fontWeight: 500 }}>pts</span>
+                <div style={{ fontWeight: 600, color: '#1A1A1A', fontSize: 14 }}>
+                  {student.score} <span style={{ fontSize: 11, color: '#A3A3A3', fontWeight: 400 }}>pts</span>
                 </div>
               </div>
             ))}
@@ -386,8 +390,12 @@ function QuizPageContent() {
         </div>
         
         <div style={{ textAlign: 'center' }}>
-          <button onClick={() => navigate('/curriculum')} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '14px 28px', background: 'white', border: '2px solid #e8e4ff', color: '#1e1b4b', borderRadius: 50, fontWeight: 700, fontSize: 15, cursor: 'pointer', transition: 'all 0.2s' }}>
-            <ArrowLeft size={18} /> Return to Curriculum
+          <button onClick={() => navigate('/curriculum')} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 7, padding: '10px 20px',
+            background: 'transparent', border: '1px solid #E7E5E4', color: '#525252',
+            borderRadius: 8, fontWeight: 500, fontSize: 13, cursor: 'pointer', transition: 'background 150ms', fontFamily: 'inherit'
+          }} onMouseEnter={e => e.currentTarget.style.background = '#F5F5F4'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+            <ArrowLeft size={14} /> Return to Curriculum
           </button>
         </div>
       </div>
