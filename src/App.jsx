@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, NavLink, useNavigate } from 'react-router-dom'
 import {
   Home, BookOpen, FileText, Code2, Trophy,
   GraduationCap, Bell, Search, ChevronDown, MonitorPlay, HelpCircle, Zap
@@ -17,6 +17,7 @@ import TeacherDashboardPage from './pages/TeacherDashboardPage'
 import TeacherHostQuizPage from './pages/TeacherHostQuizPage'
 import LoginPage from './pages/LoginPage'
 import { useApp } from './context/AppContext'
+import { programs } from './data/syllabus'
 
 function Sidebar() {
   const { user } = useApp()
@@ -52,7 +53,7 @@ function Sidebar() {
           <Trophy size={20} /><span className="nav-item-label">Leaderboard</span>
         </NavLink>
         {user?.role === 'teacher' && (
-          <NavLink to="/teacher" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ marginTop: 'auto', background: '#f5f3ff', color: '#6c47ff' }}>
+          <NavLink to="/teacher" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ marginTop: 'auto' }}>
             <FileText size={20} /><span className="nav-item-label">Teacher Portal</span>
           </NavLink>
         )}
@@ -63,20 +64,75 @@ function Sidebar() {
 
 function Header() {
   const { user, logout } = useApp()
+  const navigate = useNavigate()
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef(null)
+  
+  const [searchQuery, setSearchQuery] = useState('')
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef(null)
+  const searchInputRef = useRef(null)
 
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false)
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowSuggestions(false)
+      }
     }
     document.addEventListener("mousedown", handleClickOutside)
+
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown)
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
+      document.removeEventListener("keydown", handleKeyDown)
     }
   }, [])
+
+  // Build a static search index on mount
+  const searchIndex = useRef([])
+  useEffect(() => {
+    const index = []
+    // Add pages
+    index.push({ id: 'nav-home', type: 'page', title: 'Home', subtitle: 'Dashboard', path: '/' })
+    index.push({ id: 'nav-curr', type: 'page', title: 'Curriculum', subtitle: 'View all programs and subjects', path: '/curriculum' })
+    index.push({ id: 'nav-prob', type: 'page', title: 'Question Bank', subtitle: 'Practice coding challenges', path: '/problems' })
+    index.push({ id: 'nav-quiz', type: 'page', title: 'Live Quiz', subtitle: 'Join live quiz sessions', path: '/live-quiz' })
+    index.push({ id: 'nav-play', type: 'page', title: 'Playground', subtitle: 'Code editor', path: '/playground' })
+    index.push({ id: 'nav-lead', type: 'page', title: 'Leaderboard', subtitle: 'Global student rankings', path: '/leaderboard' })
+    if (user?.role === 'teacher') {
+      index.push({ id: 'nav-teach', type: 'page', title: 'Teacher Portal', subtitle: 'Manage curriculum and quizzes', path: '/teacher' })
+    }
+
+    // Add programs and subjects
+    Object.entries(programs).forEach(([progKey, prog]) => {
+      index.push({ id: `prog-${progKey}`, type: 'program', title: prog.fullName, subtitle: `Program • ${progKey}`, path: '/curriculum' })
+      Object.values(prog.semesters).forEach(sem => {
+        sem.subjects.forEach(sub => {
+          if (!index.find(i => i.id === `sub-${sub.id}`)) {
+            index.push({ id: `sub-${sub.id}`, type: 'subject', title: sub.name, subtitle: `${sub.code} • ${progKey}`, path: '/curriculum' })
+          }
+        })
+      })
+    })
+    searchIndex.current = index
+  }, [user?.role])
+
+  const filteredSuggestions = searchQuery.trim() === '' 
+    ? searchIndex.current 
+    : searchIndex.current.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        item.subtitle.toLowerCase().includes(searchQuery.toLowerCase())
+      )
   
   if (!user) return null
   
@@ -94,9 +150,61 @@ function Header() {
         </div>
       </div>
 
-      <div className="header-search">
-        <Search className="search-icon" />
-        <input type="text" placeholder="Search courses, subjects..." />
+      <div className="header-search" ref={searchRef} style={{ position: 'relative' }}>
+        <Search className="search-icon" size={16} color="#A3A3A3" />
+        <input 
+          ref={searchInputRef}
+          type="text" 
+          placeholder="Search courses, subjects, pages..." 
+          value={searchQuery}
+          onChange={e => {
+            setSearchQuery(e.target.value)
+            setShowSuggestions(true)
+          }}
+          onFocus={() => setShowSuggestions(true)}
+          style={{
+            width: '100%', padding: '8px 36px 8px 36px', borderRadius: 8, border: '1px solid #E7E5E4',
+            outline: 'none', fontSize: 13, color: '#1A1A1A', background: '#FAFAFA', fontFamily: 'inherit'
+          }}
+        />
+        <div style={{
+          position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+          display: 'flex', alignItems: 'center', gap: 4, pointerEvents: 'none'
+        }}>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#A3A3A3', background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: 4, padding: '2px 4px' }}>⌘</span>
+          <span style={{ fontSize: 10, fontWeight: 600, color: '#A3A3A3', background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: 4, padding: '2px 4px' }}>K</span>
+        </div>
+        {showSuggestions && (
+          <div style={{
+            position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 6,
+            background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: 8,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)', zIndex: 100, overflow: 'hidden'
+          }}>
+            <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+              {filteredSuggestions.length > 0 ? (
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  {filteredSuggestions.map((item, idx) => (
+                    <button key={item.id} onClick={() => {
+                      navigate(item.path)
+                      setSearchQuery('')
+                      setShowSuggestions(false)
+                    }} style={{
+                      padding: '10px 14px', background: 'transparent', border: 'none', borderBottom: idx < filteredSuggestions.length - 1 ? '1px solid #F5F5F4' : 'none',
+                      textAlign: 'left', cursor: 'pointer', transition: 'background 150ms', display: 'flex', flexDirection: 'column', gap: 2, fontFamily: 'inherit'
+                    }} onMouseEnter={e => e.currentTarget.style.background = '#FAFAFA'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: '#1A1A1A' }}>{item.title}</div>
+                      <div style={{ fontSize: 11, color: '#A3A3A3' }}>{item.subtitle}</div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ padding: '14px', textAlign: 'center', color: '#A3A3A3', fontSize: 12 }}>
+                  No results found for "{searchQuery}"
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="header-right">
