@@ -150,21 +150,31 @@ async function runCodeApi(lang, code) {
   
   const langId = languageMap[lang.pistonLang] || 71;
 
-  const res = await fetch('https://ce.judge0.com/submissions?wait=true', {
+  // Safely encode to Base64 (supports Unicode)
+  const encodeB64 = (str) => window.btoa(unescape(encodeURIComponent(str || '')));
+  // Safely decode from Base64
+  const decodeB64 = (str) => {
+    if (!str) return '';
+    try { return decodeURIComponent(escape(window.atob(str))); }
+    catch { return window.atob(str); }
+  }
+
+  const res = await fetch('https://ce.judge0.com/submissions?wait=true&base64_encoded=true', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      source_code: code,
+      source_code: encodeB64(code),
       language_id: langId
     })
   })
+  
   if (!res.ok) throw new Error(`API error: ${res.status}`)
   const data = await res.json()
   
   return {
     run: {
-      stdout: data.stdout || '',
-      stderr: data.stderr || data.compile_output || data.message || ''
+      stdout: decodeB64(data.stdout),
+      stderr: decodeB64(data.stderr) || decodeB64(data.compile_output) || decodeB64(data.message) || ''
     }
   }
 }
