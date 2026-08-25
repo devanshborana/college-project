@@ -140,34 +140,19 @@ int main() {
 
 ]
 
-// ── Wandbox API call (Replacing Piston) ──────────────────────────────────────
+// ── Piston API call ──────────────────────────────────────────────────────────
 async function runOnPiston(lang, code) {
-  const compilerMap = {
-    'python': 'cpython-3.14.0',
-    'c++': 'gcc-13.2.0',
-    'c': 'gcc-13.2.0-c',
-    'java': 'openjdk-jdk-22+36',
-    'javascript': 'nodejs-20.17.0'
-  }
-  
-  const res = await fetch('https://wandbox.org/api/compile.json', {
+  const res = await fetch('https://emkc.org/api/v2/piston/execute', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      compiler: compilerMap[lang.pistonLang] || 'gcc-13.2.0',
-      code: code,
-      save: false
-    }),
+      language: lang.pistonLang,
+      version: lang.pistonVersion,
+      files: [{ content: code }]
+    })
   })
   if (!res.ok) throw new Error(`API error: ${res.status}`)
-  const data = await res.json()
-  
-  return {
-    run: {
-      stdout: data.program_output || '',
-      stderr: data.compiler_error || data.program_error || ''
-    }
-  }
+  return await res.json()
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -188,7 +173,6 @@ export default function PlaygroundPage() {
   const [running, setRunning] = useState(false)
   const [runStatus, setRunStatus] = useState(null) // 'ok' | 'error' | null
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isCopied, setIsCopied] = useState(false)
   const textareaRef = useRef(null)
   const [isObscured, setIsObscured] = useState(false)
 
@@ -318,15 +302,6 @@ export default function PlaygroundPage() {
     }
   }
 
-  const handleCopy = () => {
-    const textToCopy = activeLang.id === 'html' 
-      ? (webTab === 'html' ? htmlCode : webTab === 'css' ? cssCode : jsCode)
-      : code
-    navigator.clipboard.writeText(textToCopy)
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
-  }
-
   const lineCount = code.split('\n').length
 
   const wrapperStyle = isFullscreen 
@@ -347,7 +322,7 @@ export default function PlaygroundPage() {
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '8px 14px', background: 'white', borderRadius: 12,
-        border: '1px solid #e8e4ff', boxShadow: '0 2px 8px rgba(108,71,255,0.06)'
+        border: '1px solid #E7E5E4', boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
       }}>
         {/* Language pills */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -356,11 +331,11 @@ export default function PlaygroundPage() {
               onClick={() => switchLang(lang)}
               style={{
                 padding: '5px 14px', borderRadius: 20, border: 'none', cursor: 'pointer',
-                fontSize: 12, fontWeight: 600, transition: 'all 0.18s',
-                userSelect: 'none',
-                background: activeLang.id === lang.id ? '#6c47ff' : '#f5f3ff',
-                color: activeLang.id === lang.id ? 'white' : '#6b7280',
-                boxShadow: activeLang.id === lang.id ? '0 3px 10px rgba(108,71,255,0.35)' : 'none',
+                fontSize: 12, fontWeight: 500, transition: 'all 0.15s',
+                userSelect: 'none', fontFamily: 'inherit',
+                background: activeLang.id === lang.id ? '#1A1A1A' : '#FAFAFA',
+                color: activeLang.id === lang.id ? '#FFFFFF' : '#525252',
+                boxShadow: activeLang.id === lang.id ? '0 2px 8px rgba(0,0,0,0.1)' : 'none',
               }}>
               {lang.icon} {lang.label}
             </button>
@@ -377,9 +352,6 @@ export default function PlaygroundPage() {
 
         {/* Tool icons */}
         <div style={{ display: 'flex', gap: 6 }}>
-          <button className="icon-btn" title="Copy code" onClick={handleCopy}>
-            {isCopied ? <Check size={15} color="#059669" /> : <Copy size={15} />}
-          </button>
           <button className="icon-btn" title="Clear code" onClick={handleReset}><RotateCcw size={15} /></button>
           <button className="icon-btn" title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"} onClick={() => setIsFullscreen(!isFullscreen)}>
             {isFullscreen ? <Minimize2 size={15} /> : <Maximize2 size={15} />}
@@ -489,7 +461,7 @@ export default function PlaygroundPage() {
             borderTop: '1px solid #2d2b45',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between'
           }}>
-            <div style={{ fontSize: 11, color: '#4a4a6a' }}>
+            <div style={{ fontSize: 11, color: '#A3A3A3' }}>
               {activeLang.pistonLang
                 ? `Powered by Piston API · ${activeLang.pistonLang} ${activeLang.pistonVersion}`
                 : 'Runs in browser sandbox'}
@@ -500,15 +472,18 @@ export default function PlaygroundPage() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '9px 22px',
-                background: running ? '#3d3b5a' : 'linear-gradient(135deg, #6c47ff, #a855f7)',
-                color: 'white', border: 'none', borderRadius: 50,
-                fontSize: 13, fontWeight: 700, cursor: running ? 'not-allowed' : 'pointer',
-                boxShadow: running ? 'none' : '0 4px 14px rgba(108,71,255,0.4)',
-                transition: 'all 0.2s'
-              }}>
+                background: running ? '#525252' : '#FFFFFF',
+                color: running ? '#FFFFFF' : '#1A1A1A', border: 'none', borderRadius: 50,
+                fontSize: 13, fontWeight: 600, cursor: running ? 'not-allowed' : 'pointer',
+                boxShadow: running ? 'none' : '0 2px 10px rgba(0,0,0,0.1)',
+                transition: 'background 0.15s', fontFamily: 'inherit'
+              }}
+              onMouseEnter={e => { if(!running) e.target.style.background = '#F5F5F4' }}
+              onMouseLeave={e => { if(!running) e.target.style.background = '#FFFFFF' }}
+            >
               {running
                 ? <><Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> Running…</>
-                : <><Play size={14} fill="white" /> Run Code</>}
+                : <><Play size={14} fill={running ? "white" : "#1A1A1A"} color={running ? "white" : "#1A1A1A"} /> Run Code</>}
             </button>
           </div>
         </div>
@@ -516,18 +491,18 @@ export default function PlaygroundPage() {
         {/* ── OUTPUT ── */}
         <div style={{
           display: 'flex', flexDirection: 'column',
-          background: 'white', borderRadius: 14, overflow: 'hidden',
-          border: '1px solid #e8e4ff'
+          background: '#FFFFFF', borderRadius: 14, overflow: 'hidden',
+          border: '1px solid #E7E5E4'
         }}>
           {/* Output header */}
           <div style={{
-            padding: '10px 16px', borderBottom: '1px solid #f0ecff',
+            padding: '10px 16px', borderBottom: '1px solid #E7E5E4',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            background: '#faf9ff'
+            background: '#FAFAFA'
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Terminal size={15} color="#6c47ff" />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+              <Terminal size={15} color="#1A1A1A" />
+              <span style={{ fontSize: 13, fontWeight: 600, color: '#1A1A1A' }}>
                 {activeLang.id === 'html' ? 'Preview' : 'Console Output'}
               </span>
             </div>
@@ -559,19 +534,19 @@ export default function PlaygroundPage() {
               <div style={{
                 height: '100%', overflowY: 'auto', padding: 16,
                 fontFamily: "'Fira Code', monospace", fontSize: 13,
-                background: consoleOutput?.stderr && !consoleOutput?.stdout ? '#fff5f5' : '#fafafa'
+                background: consoleOutput?.stderr && !consoleOutput?.stdout ? '#fff5f5' : '#FAFAFA'
               }}>
                 {running && (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#6b7280', padding: '20px 0' }}>
-                    <Loader size={18} style={{ animation: 'spin 1s linear infinite', color: '#6c47ff' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#525252', padding: '20px 0' }}>
+                    <Loader size={18} style={{ animation: 'spin 1s linear infinite', color: '#1A1A1A' }} />
                     <span>Compiling and running on Piston API…</span>
                   </div>
                 )}
 
                 {!running && !consoleOutput && (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    justifyContent: 'center', height: '100%', gap: 12, color: '#9ca3af' }}>
-                    <Play size={40} color="#e8e4ff" />
+                    justifyContent: 'center', height: '100%', gap: 12, color: '#A3A3A3' }}>
+                    <Play size={40} color="#E7E5E4" />
                     <span style={{ fontSize: 14 }}>Click "Run Code" to execute</span>
                     <span style={{ fontSize: 12 }}>Language: {activeLang.label}</span>
                   </div>
@@ -581,12 +556,12 @@ export default function PlaygroundPage() {
                   <div>
                     {/* Time badge */}
                     <div style={{ marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
-                      <span style={{ padding: '2px 10px', background: '#f0ecff', color: '#6c47ff',
-                        borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
+                      <span style={{ padding: '2px 10px', background: '#E7E5E4', color: '#1A1A1A',
+                        borderRadius: 20, fontSize: 11, fontWeight: 500 }}>
                         ⏱ {consoleOutput.elapsed}s
                       </span>
-                      <span style={{ padding: '2px 10px', background: '#f0ecff', color: '#6c47ff',
-                        borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
+                      <span style={{ padding: '2px 10px', background: '#E7E5E4', color: '#1A1A1A',
+                        borderRadius: 20, fontSize: 11, fontWeight: 500 }}>
                         {activeLang.label}
                       </span>
                     </div>
@@ -594,14 +569,14 @@ export default function PlaygroundPage() {
                     {/* stdout */}
                     {consoleOutput.stdout && (
                       <div>
-                        <div style={{ fontSize: 11, color: '#9ca3af', marginBottom: 6, fontFamily: 'Inter, sans-serif' }}>
+                        <div style={{ fontSize: 11, color: '#A3A3A3', marginBottom: 6, fontFamily: 'Inter, sans-serif' }}>
                           STDOUT
                         </div>
                         <pre style={{
                           whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                          color: '#1e1b4b', lineHeight: 1.7, margin: 0,
-                          padding: 12, background: '#f8f7ff', borderRadius: 8,
-                          border: '1px solid #e8e4ff'
+                          color: '#1A1A1A', lineHeight: 1.7, margin: 0,
+                          padding: 12, background: '#FFFFFF', borderRadius: 8,
+                          border: '1px solid #E7E5E4'
                         }}>
                           {consoleOutput.stdout}
                         </pre>
@@ -632,8 +607,8 @@ export default function PlaygroundPage() {
             {/* HTML empty state */}
             {activeLang.id === 'html' && !htmlOutput && (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', height: '100%', gap: 12, color: '#9ca3af' }}>
-                <Play size={40} color="#e8e4ff" />
+                justifyContent: 'center', height: '100%', gap: 12, color: '#A3A3A3' }}>
+                <Play size={40} color="#E7E5E4" />
                 <span style={{ fontSize: 14 }}>Click "Run Code" to preview HTML</span>
               </div>
             )}
