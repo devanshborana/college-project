@@ -65,9 +65,9 @@ export default function TeacherDashboardPage() {
   // REAL AI GENERATORS
   // -------------------------
   const generateWithAI = async (promptText, isQuiz = false, count = 5, subj = '', diff = '') => {
-    const apiKey = import.meta.env.VITE_GROQ_API_KEY
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY
     if (!apiKey) {
-      throw new Error("Groq API key is missing. Add VITE_GROQ_API_KEY to your .env file.")
+      throw new Error("Gemini API key is missing. Add VITE_GEMINI_API_KEY to your .env file.")
     }
     
     let prompt = ''
@@ -99,29 +99,23 @@ export default function TeacherDashboardPage() {
       }`
     }
 
-    const response = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: "qwen/qwen3.6-27b",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" }
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
       })
     })
 
     if (!response.ok) {
       const errData = await response.json()
-      throw new Error(errData?.error?.message || 'Failed to connect to Groq API')
+      throw new Error(errData?.error?.message || 'Failed to connect to Gemini API')
     }
 
     const data = await response.json()
-    
-    // With response_format: { type: "json_object" }, the API guarantees valid JSON output.
-    // The Qwen reasoning is safely separated into data.choices[0].message.reasoning
-    const parsed = JSON.parse(data.choices[0].message.content)
+    const textOutput = data.candidates[0].content.parts[0].text
+    const parsed = JSON.parse(textOutput)
     
     if (isQuiz) {
       return parsed.data
