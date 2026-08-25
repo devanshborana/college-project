@@ -137,78 +137,7 @@ int main() {
 }
 `,
   },
-  {
-    id: 'java',
-    label: 'Java',
-    pistonLang: 'java',
-    pistonVersion: '15.0.2',
-    icon: '☕',
-    defaultCode: `public class Main {
 
-    // Binary Search
-    static int binarySearch(int[] arr, int target) {
-        int lo = 0, hi = arr.length - 1;
-        while (lo <= hi) {
-            int mid = (lo + hi) / 2;
-            if (arr[mid] == target) return mid;
-            else if (arr[mid] < target) lo = mid + 1;
-            else hi = mid - 1;
-        }
-        return -1;
-    }
-
-    public static void main(String[] args) {
-        System.out.println("LMCST Java Playground ☕");
-
-        int[] arr = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};
-        int target = 23;
-        int idx = binarySearch(arr, target);
-
-        System.out.println("Array: {2,5,8,12,16,23,38,56,72,91}");
-        System.out.println("Searching for: " + target);
-        System.out.println("Found at index: " + idx);
-
-        // String manipulation
-        String college = "Lachoo Memorial College";
-        System.out.println("\\nCollege: " + college);
-        System.out.println("Length:  " + college.length());
-        System.out.println("Upper:   " + college.toUpperCase());
-    }
-}
-`,
-  },
-  {
-    id: 'javascript',
-    label: 'JavaScript (Node)',
-    pistonLang: 'javascript',
-    pistonVersion: '18.15.0',
-    icon: '⚡',
-    defaultCode: `// JavaScript — runs on Node.js via Piston API
-console.log("LMCST JS Playground ⚡\\n");
-
-// Array methods demo
-const scores = [92, 78, 85, 96, 67, 88, 74, 91];
-
-console.log("Scores:", scores);
-console.log("Average:", (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(2));
-console.log("Highest:", Math.max(...scores));
-console.log("Lowest: ", Math.min(...scores));
-console.log("Passed (>=75):", scores.filter(s => s >= 75).length);
-
-// Object demo
-const student = {
-  name: "Devansh Borana",
-  id: "LMCST-2024-001",
-  sem: 3,
-  cgpa: 8.7
-};
-
-console.log("\\nStudent Profile:");
-Object.entries(student).forEach(([k, v]) => {
-  console.log(\`  \${k}: \${v}\`);
-});
-`,
-  },
 ]
 
 // ── Wandbox API call (Replacing Piston) ──────────────────────────────────────

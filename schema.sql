@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS live_quiz_questions (
   quiz_id uuid REFERENCES live_quizzes(id) ON DELETE CASCADE,
   question_text text NOT NULL,
   options jsonb NOT NULL, -- Array of 4 strings
-  correct_answer_index integer NOT NULL
+  correct_answer_index integer NOT NULL,
+  order_index integer DEFAULT 0
 );
 
 -- Enable RLS for live_quizzes

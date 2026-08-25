@@ -59,29 +59,30 @@ export default function LoginPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
+      background: '#FAFAFA',
       padding: 20
     }}>
       <div style={{
-        background: 'white',
+        background: '#FFFFFF',
         padding: 40,
         borderRadius: 24,
-        boxShadow: '0 20px 40px rgba(108, 71, 255, 0.1)',
+        border: '1px solid #E7E5E4',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
         width: '100%',
         maxWidth: 400,
         textAlign: 'center'
       }}>
         <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
-          width: 80, height: 80, borderRadius: 16, objectFit: 'contain',
-          boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+          width: 80, height: 80, borderRadius: '50%', objectFit: 'cover',
+          border: '1px solid #E7E5E4',
           margin: '0 auto 24px', display: 'block'
         }} />
         
-        <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginBottom: 8 }}>
-          {isSignUp ? 'Create an Account' : 'Welcome Back'}
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#1A1A1A', marginBottom: 8, letterSpacing: '-0.5px' }}>
+          {isSignUp ? 'Create an account' : 'Welcome back'}
         </h1>
-        <p style={{ color: '#6b7280', fontSize: 14, marginBottom: 28 }}>
-          {isSignUp ? 'Sign up to join the Student Learning Portal' : 'Sign in to access the Student Learning Portal'}
+        <p style={{ color: '#525252', fontSize: 14, marginBottom: 28 }}>
+          {isSignUp ? 'Join the Student Learning Portal' : 'Sign in to the Student Learning Portal'}
         </p>
 
         {/* Google Sign-In Button */}
@@ -90,32 +91,32 @@ export default function LoginPage() {
           disabled={googleLoading || loading}
           style={{
             width: '100%',
-            padding: '13px 16px',
+            padding: '12px 16px',
             borderRadius: 12,
-            border: '1px solid #e5e7eb',
-            background: 'white',
+            border: '1px solid #E7E5E4',
+            background: '#FFFFFF',
             cursor: googleLoading ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 10,
-            fontSize: 15,
-            fontWeight: 600,
-            color: '#374151',
-            transition: 'all 0.2s',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#1A1A1A',
+            transition: 'all 0.15s',
+            fontFamily: 'inherit'
           }}
-          onMouseEnter={e => { e.target.style.background = '#f9fafb'; e.target.style.boxShadow = '0 2px 6px rgba(0,0,0,0.12)' }}
-          onMouseLeave={e => { e.target.style.background = 'white'; e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)' }}
+          onMouseEnter={e => { e.target.style.background = '#FAFAFA' }}
+          onMouseLeave={e => { e.target.style.background = '#FFFFFF' }}
         >
           {googleLoading ? (
             <>
-              <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
-              Redirecting to Google...
+              <Loader size={18} color="#A3A3A3" style={{ animation: 'spin 1s linear infinite' }} />
+              Redirecting...
             </>
           ) : (
             <>
-              <GoogleIcon /> Sign in with Google
+              <GoogleIcon /> Continue with Google
             </>
           )}
         </button>
@@ -123,19 +124,19 @@ export default function LoginPage() {
         {/* Divider */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          margin: '24px 0', color: '#9ca3af', fontSize: 13
+          margin: '24px 0', color: '#A3A3A3', fontSize: 12, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px'
         }}>
-          <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
-          or use Email
-          <div style={{ flex: 1, height: 1, background: '#e5e7eb' }} />
+          <div style={{ flex: 1, height: 1, background: '#E7E5E4' }} />
+          or
+          <div style={{ flex: 1, height: 1, background: '#E7E5E4' }} />
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {isSignUp && (
             <div style={{ textAlign: 'left' }}>
-              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Full Name</label>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#1A1A1A', marginBottom: 6 }}>Full Name</label>
               <div style={{ position: 'relative' }}>
-                <User size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+                <User size={16} color="#A3A3A3" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
                 <input 
                   type="text" 
                   value={name}
@@ -144,21 +145,21 @@ export default function LoginPage() {
                   required={isSignUp}
                   disabled={loading || googleLoading}
                   style={{
-                    width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
-                    border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
-                    transition: 'all 0.2s', background: '#f9fafb'
+                    width: '100%', padding: '10px 16px 10px 40px', borderRadius: 8,
+                    border: '1px solid #E7E5E4', outline: 'none', fontSize: 14,
+                    transition: 'border-color 0.15s', background: '#FAFAFA', color: '#1A1A1A', fontFamily: 'inherit'
                   }}
-                  onFocus={e => e.target.style.borderColor = '#6c47ff'}
-                  onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                  onFocus={e => e.target.style.borderColor = '#1A1A1A'}
+                  onBlur={e => e.target.style.borderColor = '#E7E5E4'}
                 />
               </div>
             </div>
           )}
 
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Email</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#1A1A1A', marginBottom: 6 }}>Email</label>
             <div style={{ position: 'relative' }}>
-              <User size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+              <User size={16} color="#A3A3A3" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input 
                 type="email" 
                 value={email}
@@ -167,20 +168,20 @@ export default function LoginPage() {
                 required
                 disabled={loading || googleLoading}
                 style={{
-                  width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
-                  border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
-                  transition: 'all 0.2s', background: '#f9fafb'
+                  width: '100%', padding: '10px 16px 10px 40px', borderRadius: 8,
+                  border: '1px solid #E7E5E4', outline: 'none', fontSize: 14,
+                  transition: 'border-color 0.15s', background: '#FAFAFA', color: '#1A1A1A', fontFamily: 'inherit'
                 }}
-                onFocus={e => e.target.style.borderColor = '#6c47ff'}
-                onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                onFocus={e => e.target.style.borderColor = '#1A1A1A'}
+                onBlur={e => e.target.style.borderColor = '#E7E5E4'}
               />
             </div>
           </div>
 
           <div style={{ textAlign: 'left' }}>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 6 }}>Password</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#1A1A1A', marginBottom: 6 }}>Password</label>
             <div style={{ position: 'relative' }}>
-              <ShieldCheck size={18} color="#9ca3af" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
+              <ShieldCheck size={16} color="#A3A3A3" style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)' }} />
               <input 
                 type="password" 
                 value={password}
@@ -189,12 +190,12 @@ export default function LoginPage() {
                 required
                 disabled={loading || googleLoading}
                 style={{
-                  width: '100%', padding: '12px 16px 12px 42px', borderRadius: 12,
-                  border: '1px solid #e5e7eb', outline: 'none', fontSize: 15,
-                  transition: 'all 0.2s', background: '#f9fafb'
+                  width: '100%', padding: '10px 16px 10px 40px', borderRadius: 8,
+                  border: '1px solid #E7E5E4', outline: 'none', fontSize: 14,
+                  transition: 'border-color 0.15s', background: '#FAFAFA', color: '#1A1A1A', fontFamily: 'inherit'
                 }}
-                onFocus={e => e.target.style.borderColor = '#6c47ff'}
-                onBlur={e => e.target.style.borderColor = '#e5e7eb'}
+                onFocus={e => e.target.style.borderColor = '#1A1A1A'}
+                onBlur={e => e.target.style.borderColor = '#E7E5E4'}
               />
             </div>
           </div>
@@ -202,44 +203,45 @@ export default function LoginPage() {
           {/* Error message */}
           {error && (
             <div style={{
-              background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10,
-              padding: '10px 14px', color: '#dc2626', fontSize: 13, textAlign: 'left'
+              background: '#FAFAFA', border: '1px solid #E7E5E4', borderRadius: 8,
+              padding: '10px 14px', color: '#1A1A1A', fontSize: 13, textAlign: 'left', display: 'flex', alignItems: 'center', gap: 6
             }}>
-              {error}
+              <span style={{color: '#A3A3A3'}}>⚠️</span> {error}
             </div>
           )}
 
           <button type="submit" disabled={loading || googleLoading} style={{
-            background: loading ? '#c4b5fd' : 'linear-gradient(135deg, #6c47ff, #a855f7)',
-            color: 'white', border: 'none', padding: '14px', borderRadius: 12,
-            fontSize: 15, fontWeight: 700, marginTop: 4, cursor: loading ? 'not-allowed' : 'pointer',
+            background: loading ? '#A3A3A3' : '#1A1A1A',
+            color: '#FFFFFF', border: 'none', padding: '12px', borderRadius: 8,
+            fontSize: 14, fontWeight: 500, marginTop: 4, cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            boxShadow: '0 4px 12px rgba(108,71,255,0.2)',
-            transition: 'all 0.2s'
-          }}>
+            transition: 'background 0.15s', fontFamily: 'inherit'
+          }}
+          onMouseEnter={e => { if(!loading) e.target.style.background = '#000000' }}
+          onMouseLeave={e => { if(!loading) e.target.style.background = '#1A1A1A' }}>
             {loading ? (
               <>
-                <Loader size={18} style={{ animation: 'spin 1s linear infinite' }} />
-                {isSignUp ? 'Signing up...' : 'Signing in...'}
+                <Loader size={16} color="#FFFFFF" style={{ animation: 'spin 1s linear infinite' }} />
+                {isSignUp ? 'Creating account...' : 'Signing in...'}
               </>
             ) : (
               <>
-                <LogIn size={18} /> {isSignUp ? 'Create Account' : 'Access Portal'}
+                {isSignUp ? 'Create account' : 'Sign in'}
               </>
             )}
           </button>
         </form>
 
-        <p style={{ color: '#9ca3af', fontSize: 13, marginTop: 20 }}>
+        <p style={{ color: '#525252', fontSize: 13, marginTop: 20 }}>
           {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
           <button 
             onClick={() => { setIsSignUp(!isSignUp); setError(null); }}
             style={{ 
-              background: 'none', border: 'none', color: '#6c47ff', 
-              fontWeight: 600, cursor: 'pointer', padding: 0 
+              background: 'none', border: 'none', color: '#1A1A1A', 
+              fontWeight: 500, cursor: 'pointer', padding: 0, textDecoration: 'underline'
             }}
           >
-            {isSignUp ? 'Sign in here' : 'Sign up here'}
+            {isSignUp ? 'Sign in' : 'Sign up'}
           </button>
         </p>
       </div>

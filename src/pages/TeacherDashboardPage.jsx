@@ -253,11 +253,12 @@ export default function TeacherDashboardPage() {
       if (quizError) throw quizError
 
       // 2. Insert questions
-      const questionsToInsert = quizQuestions.map(q => ({
+      const questionsToInsert = quizQuestions.map((q, index) => ({
         quiz_id: quizData.id,
         question_text: q.q,
         options: q.opts,
-        correct_answer_index: q.ans
+        correct_answer_index: q.ans,
+        order_index: index
       }))
 
       const { error: qError } = await supabase
@@ -271,11 +272,12 @@ export default function TeacherDashboardPage() {
       setQuizDate('')
       setQuizTime('')
       setQuizQuestions([])
+      loadScheduledQuizzes()
     } catch (err) {
       setError('Failed to schedule quiz: ' + err.message)
       window.scrollTo({ top: 0, behavior: 'smooth' })
+    } finally {
       setSavingQuiz(false)
-      loadScheduledQuizzes()
     }
   }
 

@@ -25,7 +25,7 @@ function Sidebar() {
     <aside className="sidebar">
       <div className="flex flex-col items-center mb-6">
         <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
-          width: 46, height: 46, borderRadius: 12, objectFit: 'cover',
+          width: 46, height: 46, borderRadius: '50%', objectFit: 'cover',
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
         }} />
       </div>
@@ -142,7 +142,7 @@ function Header() {
     <header className="header">
       <div className="header-left">
         <img src="/lachoo-logo.jpg" alt="LMCST Logo" style={{
-          width: 28, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #E7E5E4'
+          width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', border: '1px solid #E7E5E4'
         }} />
         <div>
           <div className="college-name">LMCST</div>

@@ -69,7 +69,7 @@ function TeacherHostQuizPageContent() {
           .from('live_quiz_questions')
           .select('*')
           .eq('quiz_id', quizId)
-          .order('id', { ascending: true })
+          .order('order_index', { ascending: true })
         setQuestions(questionsData || [])
         
         // Load existing participants
