@@ -140,19 +140,33 @@ int main() {
 
 ]
 
-// ── Piston API call ──────────────────────────────────────────────────────────
-async function runOnPiston(lang, code) {
-  const res = await fetch('https://emkc.org/api/v2/piston/execute', {
+// ── Judge0 API call ──────────────────────────────────────────────────────────
+async function runCodeApi(lang, code) {
+  const languageMap = {
+    'python': 71, // Python 3.8.1
+    'c++': 54,    // C++ (GCC 9.2.0)
+    'c': 50       // C (GCC 9.2.0)
+  }
+  
+  const langId = languageMap[lang.pistonLang] || 71;
+
+  const res = await fetch('https://ce.judge0.com/submissions?wait=true', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      language: lang.pistonLang,
-      version: lang.pistonVersion,
-      files: [{ content: code }]
+      source_code: code,
+      language_id: langId
     })
   })
   if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return await res.json()
+  const data = await res.json()
+  
+  return {
+    run: {
+      stdout: data.stdout || '',
+      stderr: data.stderr || data.compile_output || data.message || ''
+    }
+  }
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -271,10 +285,10 @@ export default function PlaygroundPage() {
       return
     }
 
-    // All other languages — Piston API
+    // All other languages — Judge0 API
     const t0 = Date.now()
     try {
-      const result = await runOnPiston(activeLang, code)
+      const result = await runCodeApi(activeLang, code)
       const elapsed = ((Date.now() - t0) / 1000).toFixed(2)
       const { stdout = '', stderr = '' } = result.run
       setConsoleOutput({ stdout, stderr, elapsed })
@@ -463,7 +477,7 @@ export default function PlaygroundPage() {
           }}>
             <div style={{ fontSize: 11, color: '#A3A3A3' }}>
               {activeLang.pistonLang
-                ? `Powered by Piston API · ${activeLang.pistonLang} ${activeLang.pistonVersion}`
+                ? `Powered by Judge0 API`
                 : 'Runs in browser sandbox'}
             </div>
             <button
@@ -539,7 +553,7 @@ export default function PlaygroundPage() {
                 {running && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, color: '#525252', padding: '20px 0' }}>
                     <Loader size={18} style={{ animation: 'spin 1s linear infinite', color: '#1A1A1A' }} />
-                    <span>Compiling and running on Piston API…</span>
+                    <span>Compiling and running on Judge0 API…</span>
                   </div>
                 )}
 
