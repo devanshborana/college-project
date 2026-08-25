@@ -246,6 +246,21 @@ function Header() {
 function MainApp() {
   const { user } = useApp()
   
+  // Global anti-copy mechanism
+  useEffect(() => {
+    const handleCopy = (e) => {
+      const tagName = e.target.tagName.toLowerCase()
+      // Allow copying only if they are actively copying from inside a text input (like their own code)
+      if (tagName !== 'textarea' && tagName !== 'input') {
+        e.preventDefault()
+        alert("Copying text from this website is disabled.")
+      }
+    }
+    
+    document.addEventListener('copy', handleCopy)
+    return () => document.removeEventListener('copy', handleCopy)
+  }, [])
+
   if (!user) {
     return (
       <Routes>

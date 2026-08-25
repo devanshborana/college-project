@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, Component } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, Award, RotateCcw, BookOpen, Loader, Users, Play, Hourglass } from 'lucide-react'
+import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, Award, RotateCcw, BookOpen, Loader, Users, Play, Hourglass, AlertCircle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../context/AppContext'
 import { quizData as staticQuizData } from '../data/quizData'
@@ -405,9 +405,57 @@ function QuizPageContent() {
 }
 
 export default function QuizPage() {
+  const [isObscured, setIsObscured] = useState(false)
+
+  // Anti-Cheat: Prevent Screenshots & Copying during Quiz
+  useEffect(() => {
+    const handleBlur = () => setIsObscured(true)
+    const handleFocus = () => setIsObscured(false)
+
+    const handleContextMenu = (e) => {
+      e.preventDefault()
+      alert("Right-click is disabled during the quiz.")
+    }
+
+    const handleKeyDown = async (e) => {
+      if (e.key === 'PrintScreen' || (e.metaKey && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4'))) {
+        e.preventDefault()
+        try {
+          await navigator.clipboard.writeText("Nice try! Screenshots are disabled in this quiz.")
+        } catch(err) {}
+        alert("Screenshots are disabled in the Quiz to ensure academic integrity.")
+      }
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault()
+        alert("Copying is disabled.")
+      }
+    }
+
+    window.addEventListener('blur', handleBlur)
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('contextmenu', handleContextMenu)
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('contextmenu', handleContextMenu)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   return (
-    <QuizErrorBoundary>
-      <QuizPageContent />
-    </QuizErrorBoundary>
+    <>
+      {isObscured && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100000, background: 'rgba(0,0,0,0.9)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 10, backdropFilter: 'blur(10px)' }}>
+          <AlertCircle size={48} color="#ef4444" />
+          <h2 style={{ fontSize: 24, fontWeight: 700 }}>Quiz Screen Obscured</h2>
+          <p style={{ color: '#a1a1aa' }}>Please focus on the window to continue the quiz.</p>
+        </div>
+      )}
+      <QuizErrorBoundary>
+        <QuizPageContent />
+      </QuizErrorBoundary>
+    </>
   )
 }

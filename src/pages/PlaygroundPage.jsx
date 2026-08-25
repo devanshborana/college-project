@@ -261,7 +261,49 @@ export default function PlaygroundPage() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
   const textareaRef = useRef(null)
+  const [isObscured, setIsObscured] = useState(false)
 
+  // Anti-Cheat: Prevent Screenshots & Copying
+  useEffect(() => {
+    // 1. Obscure screen when window loses focus (Snipping tool, etc)
+    const handleBlur = () => setIsObscured(true)
+    const handleFocus = () => setIsObscured(false)
+
+    // 2. Prevent right click
+    const handleContextMenu = (e) => {
+      e.preventDefault()
+      alert("Right-click is disabled to prevent copying.")
+    }
+
+    // 3. Detect Print Screen & common screenshot shortcuts
+    const handleKeyDown = async (e) => {
+      if (e.key === 'PrintScreen' || (e.metaKey && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4'))) {
+        e.preventDefault()
+        try {
+          await navigator.clipboard.writeText("Nice try! Screenshots are disabled in this coding assessment.")
+        } catch(err) {}
+        alert("Screenshots are disabled in the Playground to ensure academic integrity.")
+      }
+      
+      // Also prevent Ctrl+C / Cmd+C for good measure if they select text
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault()
+        alert("Copying code is disabled.")
+      }
+    }
+
+    window.addEventListener('blur', handleBlur)
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('contextmenu', handleContextMenu)
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('blur', handleBlur)
+      window.removeEventListener('focus', handleFocus)
+      window.removeEventListener('contextmenu', handleContextMenu)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
   // Switch language
   const switchLang = (lang) => {
     setActiveLang(lang)
@@ -364,6 +406,13 @@ export default function PlaygroundPage() {
 
   return (
     <div style={{ ...wrapperStyle, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {isObscured && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 100000, background: 'rgba(0,0,0,0.9)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 10, backdropFilter: 'blur(10px)' }}>
+          <AlertCircle size={48} color="#ef4444" />
+          <h2 style={{ fontSize: 24, fontWeight: 700 }}>Screenshots & Recording Disabled</h2>
+          <p style={{ color: '#a1a1aa' }}>Please focus on the window to continue coding.</p>
+        </div>
+      )}
 
       {/* ── Top bar ── */}
       <div style={{
