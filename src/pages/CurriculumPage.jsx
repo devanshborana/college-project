@@ -507,7 +507,7 @@ export default function CurriculumPage() {
       </div>
 
       {/* Program cards — 2-col grid, flat white cards, no colored borders/shadows */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <div className="curriculum-grid">
         {PROGRAM_KEYS.map(progKey => {
           const p = programs[progKey]
           const allSubjects = Object.values(p.semesters).flatMap(s => s.subjects)
