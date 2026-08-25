@@ -487,6 +487,10 @@ export default function PlaygroundPage() {
                 }
               }}
               onKeyDown={handleKeyDown}
+              onPaste={e => {
+                e.preventDefault()
+                alert("Pasting code is disabled in the Playground to encourage typing and practice.")
+              }}
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"
