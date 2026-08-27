@@ -314,7 +314,7 @@ function QuizPageContent() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {q?.options.map((opt, i) => {
+              {q?.options?.map((opt, i) => {
                 const isSelected = selected === i
                 return (
                   <button key={i} onClick={() => handleAnswer(i)}

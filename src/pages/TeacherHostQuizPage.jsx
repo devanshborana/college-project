@@ -233,7 +233,7 @@ function TeacherHostQuizPageContent() {
                   {questions[quiz.current_question_index]?.question_text}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
-                  {questions[quiz.current_question_index]?.options.map((opt, i) => {
+                  {questions[quiz.current_question_index]?.options?.map((opt, i) => {
                     const isCorrect = questions[quiz.current_question_index].correct_answer_index === i;
                     return (
                       <div key={i} style={{ 
