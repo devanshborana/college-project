@@ -76,6 +76,8 @@ export function AppProvider({ children }) {
 
   // ── Load Real Leaderboard from Supabase ─────────────────────────────────
   const [dbLeaderboard, setDbLeaderboard] = useState([])
+  const [currentUserLiveScore, setCurrentUserLiveScore] = useState(0)
+
   useEffect(() => {
     if (!supabase) return
     const fetchLeaderboard = async () => {
@@ -83,21 +85,45 @@ export function AppProvider({ children }) {
         .from('profiles')
         .select('id, full_name, student_id, base_points')
       
+      const { data: liveData } = await supabase
+        .from('live_quiz_participants')
+        .select('student_id, score')
+        .eq('approval_status', 'allowed')
+      
+      const liveStats = {}
+      if (liveData) {
+        liveData.forEach(row => {
+          if (!liveStats[row.student_id]) liveStats[row.student_id] = { score: 0, attempted: 0 }
+          liveStats[row.student_id].score += row.score || 0
+          liveStats[row.student_id].attempted += 1
+        })
+      }
+
       if (data && !error) {
         const colors = ['#f59e0b', '#6c47ff', '#a855f7', '#22c55e', '#ec4899', '#f97316', '#14b8a6', '#ef4444']
-        setDbLeaderboard(data.map((p, i) => ({
-          name: p.full_name || p.student_id,
-          id: p.student_id, // student_id acts as the email/id
-          dbId: p.id,
-          basePoints: p.base_points || 0,
-          solved: 0,
-          badges: 0,
-          color: colors[i % colors.length]
-        })))
+        setDbLeaderboard(data.map((p, i) => {
+          const lStats = liveStats[p.id] || { score: 0, attempted: 0 }
+          return {
+            name: p.full_name || p.student_id,
+            id: p.student_id, // student_id acts as the email/id
+            dbId: p.id,
+            basePoints: p.base_points || 0,
+            liveScore: lStats.score,
+            liveAttempted: lStats.attempted,
+            solved: 0,
+            badges: 0,
+            color: colors[i % colors.length]
+          }
+        }))
+
+        if (user?.dbId) {
+          const myStats = liveStats[user.dbId] || { score: 0 }
+          setCurrentUserLiveScore(myStats.score)
+        }
       }
     }
     fetchLeaderboard()
-  }, [])
+  }, [user?.dbId])
 
   // ── Google OAuth: listen for auth state changes ─────────────────────────
   useEffect(() => {
@@ -238,7 +264,7 @@ export function AppProvider({ children }) {
   // ── Quiz points ──────────────────────────────────────────────────────────
   const quizPoints = Object.values(quizHistory).reduce((sum, h) => sum + h.score, 0)
   const currentUserBasePoints = user?.basePoints ?? 0
-  const currentUserTotalPoints = currentUserBasePoints
+  const currentUserTotalPoints = currentUserBasePoints + currentUserLiveScore
   const quizzesCompleted = Object.keys(quizHistory).length
 
   // ── Save quiz result to Supabase ────────────────────────────────────────
@@ -294,7 +320,7 @@ export function AppProvider({ children }) {
     return {
       ...p,
       isCurrentUser: false,
-      points: p.basePoints
+      points: p.basePoints + (p.liveScore || 0)
     }
   })
 
@@ -304,6 +330,8 @@ export function AppProvider({ children }) {
       name: user.name,
       id: user.id,
       basePoints: currentUserBasePoints,
+      liveScore: currentUserLiveScore,
+      liveAttempted: 0,
       solved: 0,
       badges: 0,
       color: '#3b82f6',

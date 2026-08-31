@@ -109,10 +109,12 @@ export default function LeaderboardPage() {
 
       {/* Table */}
       <div className="leaderboard-table">
-        <div className="lb-header">
+        <div className="lb-header" style={{ gridTemplateColumns: '60px 2fr 1fr 1fr 1fr 1fr 1fr' }}>
           <div>Rank</div>
           <div>Student</div>
           <div style={{ textAlign: 'right' }}>Points</div>
+          <div style={{ textAlign: 'right' }}>Live Score</div>
+          <div style={{ textAlign: 'right' }}>Live Quizzes</div>
           <div style={{ textAlign: 'right' }}>Solved</div>
           <div style={{ textAlign: 'right' }}>Stars</div>
         </div>
@@ -120,7 +122,7 @@ export default function LeaderboardPage() {
         {leaderboard.map(student => {
           const rankCls = getRankStyle(student.rank)
           return (
-            <div key={student.id} className={`lb-row ${student.isCurrentUser ? 'current-user' : ''} fade-in-up`}>
+            <div key={student.id} className={`lb-row ${student.isCurrentUser ? 'current-user' : ''} fade-in-up`} style={{ gridTemplateColumns: '60px 2fr 1fr 1fr 1fr 1fr 1fr' }}>
               <div>
                 <div className={`rank-badge ${rankCls}`}>
                   {student.rank <= 3 ? `#${student.rank}` : `#${student.rank}`}
@@ -144,6 +146,16 @@ export default function LeaderboardPage() {
               {/* Points — right aligned, no chip */}
               <div style={{ textAlign: 'right' }}>
                 <span className="points-chip">{student.points.toLocaleString()}</span>
+              </div>
+
+              {/* Live Score */}
+              <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, fontSize: 13, color: '#525252' }}>
+                <Zap size={13} color="#f59e0b" /> {student.liveScore || 0}
+              </div>
+
+              {/* Live Quizzes Attempted */}
+              <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, fontSize: 13, color: '#525252' }}>
+                {student.liveAttempted || 0}
               </div>
 
               {/* Solved — Lucide icon, not emoji */}
