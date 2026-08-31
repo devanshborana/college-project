@@ -34,7 +34,7 @@ class QuizErrorBoundary extends Component {
 function QuizPageContent() {
   const { subjectId } = useParams()
   const navigate = useNavigate()
-  const { user } = useApp()
+  const { user, saveQuizResult } = useApp()
 
   const [quiz, setQuiz] = useState(null)
   const [questions, setQuestions] = useState([])
@@ -116,7 +116,32 @@ function QuizPageContent() {
 
       } else {
         // Fallback for static asynchronous quizzes
-        setQuiz(staticQuizData[subjectId] || null)
+        const sq = staticQuizData[subjectId]
+        if (sq) {
+          setQuiz({
+            id: subjectId,
+            title: sq.title,
+            status: 'Active',
+            current_question_index: 0,
+            isStatic: true
+          })
+          setQuestions(sq.questions.map((q, i) => ({
+            id: `static-${i}`,
+            question_text: q.q,
+            options: q.opts,
+            correct_answer_index: q.ans,
+            order_index: i
+          })))
+          setParticipants([{
+            id: 'static-part-1',
+            student_id: user?.dbId || 'guest',
+            approval_status: 'allowed',
+            score: 0,
+            profiles: { full_name: user?.name || 'You' }
+          }])
+        } else {
+          setQuiz(null)
+        }
       }
       setLoadingQuiz(false)
     }
@@ -156,7 +181,14 @@ function QuizPageContent() {
 
     setMyScore(newScore)
     
-    if (user?.dbId && newScore !== myScore) {
+    // Update participant score locally so results leaderboard works
+    if (quiz.isStatic) {
+      setParticipants(prev => prev.map(p => 
+        (p.student_id === (user?.dbId || 'guest')) ? { ...p, score: newScore } : p
+      ))
+    }
+
+    if (!quiz.isStatic && user?.dbId && newScore !== myScore) {
       await supabase.from('live_quiz_participants')
         .update({ score: newScore })
         .eq('quiz_id', quiz.id)
@@ -335,6 +367,54 @@ function QuizPageContent() {
               })}
             </div>
           </div>
+
+          {/* Controls for static quiz */}
+          {quiz.isStatic && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+              <button
+                disabled={qIndex === 0}
+                onClick={() => setQuiz(q => ({ ...q, current_question_index: q.current_question_index - 1 }))}
+                style={{
+                  padding: '10px 20px', borderRadius: 8, background: qIndex === 0 ? '#F5F5F4' : '#FFFFFF',
+                  border: '1px solid #E7E5E4', color: qIndex === 0 ? '#A3A3A3' : '#1A1A1A',
+                  cursor: qIndex === 0 ? 'not-allowed' : 'pointer', fontWeight: 500,
+                  display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit'
+                }}
+              >
+                <ArrowLeft size={16} /> Previous
+              </button>
+
+              {qIndex < questions.length - 1 ? (
+                <button
+                  onClick={() => setQuiz(q => ({ ...q, current_question_index: q.current_question_index + 1 }))}
+                  style={{
+                    padding: '10px 20px', borderRadius: 8, background: '#111111',
+                    border: 'none', color: 'white', cursor: 'pointer', fontWeight: 500,
+                    display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit'
+                  }}
+                >
+                  Next <ArrowRight size={16} />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setQuiz(q => ({ ...q, status: 'Completed' }))
+                    if (saveQuizResult) {
+                      saveQuizResult(quiz.id, myScore, questions.length, quiz.title)
+                    }
+                  }}
+                  style={{
+                    padding: '10px 20px', borderRadius: 8, background: '#6c47ff',
+                    border: 'none', color: 'white', cursor: 'pointer', fontWeight: 600,
+                    display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'inherit'
+                  }}
+                >
+                  Submit Quiz <CheckCircle size={16} />
+                </button>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
     )
