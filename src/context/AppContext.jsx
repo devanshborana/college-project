@@ -24,6 +24,16 @@ export function AppProvider({ children }) {
     localStorage.setItem('lmcst-quiz-history', JSON.stringify(quizHistory))
   }, [quizHistory])
 
+  // solvedQuestions: array of solved question IDs
+  const [solvedQuestions, setSolvedQuestions] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('lmcst-solved-questions') || '[]') }
+    catch { return [] }
+  })
+
+  useEffect(() => {
+    localStorage.setItem('lmcst-solved-questions', JSON.stringify(solvedQuestions))
+  }, [solvedQuestions])
+
   // Persist user to localStorage (lightweight session)
   useEffect(() => {
     if (user) localStorage.setItem('lmcst-user', JSON.stringify(user))
@@ -117,7 +127,7 @@ export function AppProvider({ children }) {
         }
 
         if (profile) {
-          setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id, role: profile.role || 'student' })
+          setUser({ name: profile.full_name, id: profile.student_id, dbId: profile.id, role: profile.role || 'student', basePoints: profile.base_points || 0 })
         }
       }
     })
@@ -175,6 +185,54 @@ export function AppProvider({ children }) {
     }
     setUser(null)
     setQuizHistory({})
+    setSolvedQuestions([])
+  }
+
+  // ── Points System ────────────────────────────────────────────────────────
+  const addPoints = async (amount) => {
+    if (!amount || amount <= 0 || !user?.dbId || !supabase) return
+
+    // Update local state immediately for snappy UI
+    const newPoints = (user.basePoints || 0) + amount
+    setUser(prev => ({ ...prev, basePoints: newPoints }))
+
+    // Update DB securely
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('base_points')
+      .eq('id', user.dbId)
+      .single()
+
+    if (profile) {
+      const updatedPoints = (profile.base_points || 0) + amount
+      await supabase
+        .from('profiles')
+        .update({ base_points: updatedPoints })
+        .eq('id', user.dbId)
+
+      setUser(prev => ({ ...prev, basePoints: updatedPoints }))
+    }
+  }
+
+  // ── Daily Login Points ───────────────────────────────────────────────────
+  useEffect(() => {
+    if (!user?.dbId) return
+    const today = new Date().toDateString()
+    const lastLoginKey = `lmcst-last-login-${user.dbId}`
+    const lastLogin = localStorage.getItem(lastLoginKey)
+    
+    if (lastLogin !== today) {
+      localStorage.setItem(lastLoginKey, today)
+      addPoints(1) // +1 point for logging in today
+    }
+  }, [user?.dbId])
+
+  // ── Question Bank Points ─────────────────────────────────────────────────
+  const markQuestionSolved = (questionId) => {
+    if (!solvedQuestions.includes(questionId)) {
+      setSolvedQuestions(prev => [...prev, questionId])
+      addPoints(5) // +5 points for solving a coding challenge
+    }
   }
 
   // ── Quiz points ──────────────────────────────────────────────────────────
@@ -185,15 +243,27 @@ export function AppProvider({ children }) {
 
   // ── Save quiz result to Supabase ────────────────────────────────────────
   const saveQuizResult = async (subjectId, score, total, subjectName) => {
+    // Calculate points to award
+    const existing = quizHistory[subjectId]
+    let pointsToAward = 0
+    if (!existing) {
+      pointsToAward = score
+    } else if (score > existing.score) {
+      pointsToAward = score - existing.score
+    }
+
     // Optimistic local update first
     setQuizHistory(prev => {
-      const existing = prev[subjectId]
       if (existing && existing.score >= score) return prev
       return {
         ...prev,
         [subjectId]: { score, total, subjectName, completedAt: new Date().toISOString() }
       }
     })
+
+    if (pointsToAward > 0) {
+      addPoints(pointsToAward)
+    }
 
     // Persist to Supabase if user has a dbId and supabase is available
     if (user?.dbId && supabase) {
@@ -257,6 +327,8 @@ export function AppProvider({ children }) {
       quizzesCompleted,
       currentUserTotalPoints,
       saveQuizResult,
+      solvedQuestions,
+      markQuestionSolved,
       leaderboard: sortedLeaderboard,
     }}>
       {children}

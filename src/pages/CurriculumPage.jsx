@@ -24,10 +24,10 @@ function DiffBadge({ diff }) {
 }
 
 // ─── Modal: Subject detail ────────────────────────────────────────────────────
-function SubjectModal({ subject, onClose, navigate, solvedQuestions = [], setSolvedQuestions }) {
+function SubjectModal({ subject, onClose, navigate }) {
   const [view, setView] = useState('menu')
   const [activeQuestion, setActiveQuestion] = useState(null)
-  const { quizHistory } = useApp()
+  const { quizHistory, solvedQuestions, markQuestionSolved } = useApp()
 
   const details = subjectDetails[subject.id]
   const quiz = quizData[subject.id]
@@ -362,9 +362,7 @@ function SubjectModal({ subject, onClose, navigate, solvedQuestions = [], setSol
                   </button>
                   {/* Primary solid black button */}
                   <button onClick={() => {
-                    if (!solvedQuestions.includes(activeQuestion.id)) {
-                      setSolvedQuestions && setSolvedQuestions([...solvedQuestions, activeQuestion.id])
-                    }
+                    markQuestionSolved(activeQuestion.id)
                   }} style={{
                     flex: 1, padding: '10px', borderRadius: 8, border: 'none',
                     background: solvedQuestions.includes(activeQuestion.id) ? '#F5F5F4' : '#111111',
@@ -490,7 +488,6 @@ function SemesterSection({ semNum, semData, onSubjectClick, quizHistory }) {
 export default function CurriculumPage() {
   const [selectedProgram, setSelectedProgram] = useState(null)
   const [selectedSubject, setSelectedSubject] = useState(null)
-  const [solvedQuestions, setSolvedQuestions] = useState([])
   const { quizHistory } = useApp()
   const navigate = useNavigate()
 
@@ -621,8 +618,6 @@ export default function CurriculumPage() {
           subject={selectedSubject}
           onClose={() => setSelectedSubject(null)}
           navigate={navigate}
-          solvedQuestions={solvedQuestions}
-          setSolvedQuestions={setSolvedQuestions}
         />
       )}
     </div>
